@@ -30,7 +30,22 @@ The aim is to understand which factors influence electricity demand, such as:
 ### Part 2. Forecasting electricity consumption  
 Based on the identified drivers, the goal is to produce a **forecast of electricity consumption for October 2025**, broken down into months, days, and hours.  
 
-## Research plan
+## Research plan  
+
+1. **Find the correlation between electricity consumption and temperature at the monthly level**  
+   - Use the last 5 years of data (or more if available).  
+   - Outcome: estimate monthly electricity consumption based on temperature forecasts.  
+
+2. **Find the correlation between electricity consumption and temperature at the daily level**  
+   - Focus on data from a specific month.  
+   - Outcome: estimate daily electricity consumption based on daily temperature forecasts.  
+
+3. **Analyze daily consumption curves**  
+   - Identify typical daily load patterns.  
+   - Outcome: allocate the daily consumption forecast across the 24 hours of the day.  
+
+### Open Question  
+Should additional factors be considered in the research plan?  
 
 ## Data protection description – on what basis are the data processed?
 
