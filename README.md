@@ -1,6 +1,3 @@
-# Electricity-Consumption-Forecast
-ValiAndmed final project about Electrictiy Consumption Forecast
-
 # Final Project: Electricity Consumption Forecast
 
 ## About the Final Project  
