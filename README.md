@@ -40,6 +40,10 @@ Based on the identified drivers, the goal is to produce a **forecast of electric
 
 ## Creation of a sample dataset
 
+### Data Sources  
+- **Electricity Consumption** – [Elering](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table)  
+- **Temperature Data** – [University of Tartu, Institute of Physics Weather Station](https://meteo.physic.ut.ee/)  
+ 
 ## Data quality check
 
 ## Exploratory data analysis
