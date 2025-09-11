@@ -17,7 +17,6 @@ ValiAndmed final project about Electrictiy Consumption Forecast
     - Email: *...*  
     - LinkedIn: *link*  
 
----
 ## Introduction of the Company and Research Problem  
 
 Company X is an electricity sales company that needs to forecast electricity consumption in Estonia at the **monthly, daily, and hourly level** in order to support electricity purchasing and planning decisions.  
