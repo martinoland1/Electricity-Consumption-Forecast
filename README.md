@@ -28,7 +28,7 @@ The aim is to understand which factors influence electricity demand, such as:
 - **Other external factors** – X (to be identified during the analysis)  
 
 ### Part 2. Forecasting electricity consumption  
-Based on the identified drivers, the goal is to produce a **forecast of electricity consumption for October 2025**, broken down into months, days, and hours.  
+Based on the identified drivers, the goal is to produce a **forecast of electricity consumption for October 2025**, broken down into months, days, and hours. And test the model against real data.
 
 ## Research plan  
 
