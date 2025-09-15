@@ -57,6 +57,10 @@ Should additional factors be considered in the research plan?
 
 ## Business glossary, data model, data dictionary
 
+### Data model
+
+[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
+
 ## Data flow
 
 ## Creation of a sample dataset
