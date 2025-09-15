@@ -2,7 +2,7 @@
 
 ## About the Final Project  
 - This is the final project of the **Vali-IT Data Analytics 6-week bootcamp**: [vali-it.ee/andmetarkus](https://vali-it.ee/andmetarkus)  
-- **Tech stack**: Power BI, Excel, SQL, PostgreSQL, DBeaver, Python, Jupyter Notebook, Visual Studio Code, Git, GitHub  
+- **Tech stack**: Python, Visual Studio Code, Jupyter Notebook, Git, GitHub  
 - **Project authors**:  
   - Johannes Kauksi  
     - Email: *...*  
