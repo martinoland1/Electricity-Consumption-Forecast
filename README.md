@@ -49,10 +49,14 @@ Should additional factors be considered in the research plan?
 
 ## Creation of a sample dataset
 
-### Data Sources  
-- **Electricity Consumption** – [Elering](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table)  
-- **Temperature Data** – [University of Tartu, Institute of Physics Weather Station](https://meteo.physic.ut.ee/)  
- 
+### Data Sources
+
+- **Electricity Consumption API (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
+- **Electricity Consumption API (CSV)** – [Elering](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table)  
+
+- **Hourly Temperature API (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)  
+- **Hourly temperature Data (CSV)** – [University of Tartu, Institute of Physics Weather Station](https://meteo.physic.ut.ee/)  
+
 ## Data quality check
 
 ## Exploratory data analysis
