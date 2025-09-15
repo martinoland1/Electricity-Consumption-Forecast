@@ -18,33 +18,13 @@
 
 Company X is an electricity sales company that needs to forecast electricity consumption in Estonia at the **hourly level** in order to support electricity planning and purchasing decisions.  
 
-The research problem is twofold:  
-
-### Part 1. Identifying the drivers of electricity consumption in Estonia
-
-The aim is to understand which factors influence electricity demand, such as:  
-- **Weather conditions** – temperature, precipitation, wind speed, solar radiation  
-- **Calendar effects** – month, day of the week (working day, weekend, public holiday)  
-- **Other external factors** – X (to be identified during the analysis)  
-
-### Part 2. Forecasting electricity consumption  
-Based on the identified drivers, the goal is to produce a **forecast of electricity consumption for October 2025**, broken down into months, days, and hours. And test the model against real data.
-
 ## Research plan
 
-1. **Find the correlation between electricity consumption and temperature at the monthly level**  
-   - Use the last 5 years of data (or more if available).  
-   - Outcome: estimate monthly electricity consumption based on temperature forecasts.  
+1. **Analyze correlation:** Examine the relationship between electricity consumption and temperature using historical data.
+2. **Build forecast:** Develop an **hourly** electricity consumption forecast model.
+3. **Validate:** Test the forecast **against actuals** and assess accuracy.
 
-2. **Find the correlation between electricity consumption and temperature at the daily level**  
-   - Focus on data from a specific month.  
-   - Outcome: estimate daily electricity consumption based on daily temperature forecasts.  
-
-3. **Analyze daily consumption curves**  
-   - Identify typical daily load patterns.  
-   - Outcome: allocate the daily consumption forecast across the 24 hours of the day.  
-
-## To-Do List
+### To-Do List
 
 - [ ] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* @sergeierbin
 - [x] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
