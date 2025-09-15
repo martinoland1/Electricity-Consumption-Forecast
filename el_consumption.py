@@ -217,15 +217,15 @@ print(sum_daily_el_consumption.head())
 # print(f"Saved daily dataset: {daily_out}")
 
 # --- Show dtypes for both DataFrames ---
-# print("\n=== Column dtypes: sum_hourly_el_consumption ===")
-# print(sum_hourly_el_consumption.dtypes)
+print("\n=== Column dtypes: sum_hourly_el_consumption ===")
+print(sum_hourly_el_consumption.dtypes)
 
-# print("\n=== Column dtypes: sum_daily_el_consumption ===")
-# print(sum_daily_el_consumption.dtypes)
+print("\n=== Column dtypes: sum_daily_el_consumption ===")
+print(sum_daily_el_consumption.dtypes)
 
 # (Optional) more detailed overview:
-# print("\n=== .info() (hourly) ===")
-# sum_hourly_el_consumption.info()
+print("\n=== .info() (hourly) ===")
+sum_hourly_el_consumption.info()
 
-# print("\n=== .info() (daily) ===")
-# sum_daily_el_consumption.info()
+print("\n=== .info() (daily) ===")
+sum_daily_el_consumption.info()
