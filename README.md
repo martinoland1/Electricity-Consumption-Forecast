@@ -52,7 +52,7 @@ Should additional factors be considered in the research plan?
 ### Data Sources
 
 - **Electricity Consumption API (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
-- **Electricity Consumption API (CSV)** – [Elering LIVE](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table)  
+- **Electricity Consumption API (CSV)** – [Elering LIVE][(https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=days&start=2025-09-14T21:00:00.000Z&end=2025-09-15T20:59:59.999Z&show=table))  
 
 - **Hourly Temperature API (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)  
 - **Hourly temperature Data (CSV)** – [University of Tartu, Institute of Physics Weather Station](https://meteo.physic.ut.ee/)  
