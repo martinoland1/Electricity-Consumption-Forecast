@@ -16,7 +16,7 @@
 
 ## Introduction of the Company and Research Problem  
 
-Company X is an electricity sales company that needs to forecast electricity consumption in Estonia at the **hourly level** in order to support electricity planning and purchasing decisions.  
+Company X is an electricity sales company that needs **to forecast electricity consumption in Estonia at the hourly level** in order to support electricity planning and purchasing decisions.  
 
 ## Research plan
 
@@ -31,6 +31,8 @@ Company X is an electricity sales company that needs to forecast electricity con
 - [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* @sergeierbin
 - [ ] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
 - [ ] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
+
+- [ ] **Analyze daily consumption curves and identify typical daily load patterns.** — *Owner:*
 
 ### Open Question  
 Should additional factors be considered in the research plan?  
