@@ -46,8 +46,8 @@ Based on the identified drivers, the goal is to produce a **forecast of electric
 
 ## To-Do List
 
-- [ ] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
-- [ ] **Import the electricity consumption JSON dataset into Python.** — *Owner:* @sergeierbin
+- [x] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
+- [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* @sergeierbin
 - [ ] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
 - [ ] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
 
