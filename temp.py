@@ -8,7 +8,7 @@ from meteostat import Hourly, Point
 # Config
 # -----------------------------
 # Use local time for daily aggregation so days match Estonia's calendar
-USE_LOCAL_TIME_FOR_DAILY = True
+USE_LOCAL_TIME_FOR_DAILY = False
 LOCAL_TZ = 'Europe/Tallinn'
 
 # -----------------------------
