@@ -5,8 +5,8 @@
 - **Tech stack**: Python, Visual Studio Code, Jupyter Notebook, Git, GitHub  
 - **Project authors**:  
   - Johannes Kauksi  
-    - Email: *...*  
-    - LinkedIn: *link* 
+    - Email: johanneskauksi@gmail.com  
+    - LinkedIn:[ *link* ](https://www.linkedin.com/in/johannes-kauksi/)
   - Sergei Erbin  
     - Email: sergei.erbin@gmail.com  
     - LinkedIn: [https://www.linkedin.com/in/sergei-erbin/](https://www.linkedin.com/in/sergei-erbin/)   
