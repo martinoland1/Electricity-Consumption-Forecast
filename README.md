@@ -55,6 +55,8 @@ Should additional factors be considered in the research plan?
 [![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
 ## Data flow
+[![Data model](docs/data_model.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/el_cons_data_model-data_lineage_model.jpg)
+
 
 ## Creation of a sample dataset
 
