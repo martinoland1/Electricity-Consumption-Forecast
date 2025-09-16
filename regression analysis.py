@@ -117,8 +117,10 @@ merged["hour_day_value"] = pd.to_numeric(
 merged = merged.dropna()
 
 if merged.empty:
-    raise RuntimeError("Merged dataset is empty after alignment/cleaning. "
-                       "Check upstream scripts, date alignment, and timezones.")
+    raise RuntimeError(
+        "Merged dataset is empty after alignment/cleaning. "
+        "Check upstream scripts, date alignment, and timezones."
+    )
 
 # -----------------------------
 # Correlation & regression
@@ -148,7 +150,35 @@ rmse = float(np.sqrt(np.mean(res ** 2)))
 mae = float(np.mean(np.abs(res)))
 
 # -----------------------------
-# Print summary
+# >>> NEW: Regression summary as a DataFrame (incl. formula)
+# -----------------------------
+sign = '+' if slope >= 0 else '−'  # visual sign for the human-readable equation
+equation_str = f"y = {intercept:.6f} + ({slope:.6f})*x"
+equation_tex = rf"$\hat{{y}} = {intercept:.3f} {sign} {abs(slope):.3f} \times x$"
+
+regression_summary_df = pd.DataFrame([{
+    "equation": equation_str,
+    "equation_tex": equation_tex,
+    "slope": slope,
+    "intercept": intercept,
+    "r": r_value,
+    "r2": r2,
+    "p_value": p_value,
+    "rmse": rmse,
+    "mae": mae,
+    "days_used": len(merged),
+    "date_start": merged["sum_cons_date"].min(),
+    "date_end": merged["sum_cons_date"].max(),
+}])
+
+print("\n=== Regression summary as DataFrame ===")
+print(regression_summary_df.to_string(index=False))
+
+# (Optional) tee DataFrame kättesaadavaks teistes skriptides: import regression_analysis as ra; ra.regression_summary_df
+# (mitte salvestada automaatselt faili, et hoida skript puhas)
+
+# -----------------------------
+# Print text summary (existing)
 # -----------------------------
 print("\n=== MERGED daily data (first 10 rows) ===")
 print(merged.head(10).to_string(index=False))
@@ -189,13 +219,9 @@ ax.grid(True, linestyle="--", alpha=0.3)
 ax.legend()
 
 # --- Add equation (mathtext) and R² onto the chart ---
-sign = '+' if slope >= 0 else '−'  # visual sign for slope
-eq_text = rf"$\hat{{y}} = {intercept:.3f} {sign} {abs(slope):.3f} \times x$"
-ann_text = f"{eq_text}\n$R^2$ = {r2:.3f}"
-
 ax.text(
     0.02, 0.98,
-    ann_text,
+    f"{equation_tex}\n$R^2$ = {r2:.3f}",
     transform=ax.transAxes,
     va="top", ha="left",
     bbox=dict(boxstyle="round", alpha=0.15, linewidth=0.5)
