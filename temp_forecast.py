@@ -58,6 +58,9 @@ result = (pd.concat(all_series, axis=1)
           if all_series else pd.DataFrame(index=days_utc))
 result = result.reindex(days_utc)
 
+city_cols = list(points.keys())             # ["Tallinn","Tartu","Pärnu","Narva","Kuressaare"]
+result["EE_avg"] = result[city_cols].mean(axis=1, skipna=True)
+
 # Väljund: YYYY-MM-DD, ümardus 1 koht
 out = result.round(1).reset_index().rename(columns={"index": "date_utc"})
 out["date_utc"] = out["date_utc"].dt.strftime("%Y-%m-%d")
