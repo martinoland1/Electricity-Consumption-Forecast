@@ -73,8 +73,20 @@ x = df["hour_day_value"].to_numpy(float)      # temp (°C)
 y = df["sum_el_daily_value"].to_numpy(float)  # daily consumption
 
 # --- Lihtne lineaarne mudel: y = a + b * T (kasutame etteantud väärtuseid) ---
-a = 24939.181233   # intercept
-b = -396.694905    # slope
+try:
+    ra = import_module_silent("regression_analysis")
+    ra_df = getattr(ra, "regression_summary_df", None)
+    if ra_df is not None and not ra_df.empty:
+        a = float(ra_df.loc[0, "intercept"])
+        b = float(ra_df.loc[0, "slope"])
+    else:
+        raise AttributeError("regression_summary_df is empty or missing")
+except Exception:
+    # Fallback: arvuta koefitsiendid siinsamas
+    x = df["hour_day_value"].to_numpy(float)
+    y = df["sum_el_daily_value"].to_numpy(float)
+    b, a = np.polyfit(x, y, 1)  # slope, intercept
+print(f"Mudel: y = {a:.3f} + {b:.3f} * T  (T = avg day temp °C)")
 
 # Päevaprognoos ja jäägid
 df["y_hat"] = a + b * df["hour_day_value"]
@@ -144,7 +156,11 @@ print(f"Base (temp-only)   MAPE: {mape_base*100:.2f}%")
 print(f"Kuupõhine korrigeer MAPE: {mape_month*100:.2f}%")
 print(f"Aastaajapõhine     MAPE: {mape_season*100:.2f}%")
 
-# 4) Salvesta täiendavad failid
+""" # --- Salvesta AINULT aastaaja bias ---
+OUTDIR.mkdir(parents=True, exist_ok=True)
+season_bias.to_csv(OUTDIR / "bias_season.csv", index=False)
+ """
+""" # 4) Salvesta täiendavad failid
 (OUTDIR / "bias_season.csv").write_text(
     season_bias.to_csv(index=False), encoding="utf-8"
 )
@@ -165,7 +181,7 @@ ax.set_xlabel("Kuu"); ax.set_ylabel("Tarbimine (ühikud)")
 ax.grid(True, linestyle="--", alpha=0.3); ax.legend()
 plt.tight_layout()
 plt.savefig(OUTDIR / "bias_actual_vs_all_predictions.png", dpi=130)
-plt.show()
+plt.show() """
 
 
 # --- Üldine (kogu periood) bias ---
@@ -174,40 +190,57 @@ total_pred   = monthly["predicted"].sum()
 overall_bias_factor = float(total_actual / total_pred) if total_pred > 0 else np.nan
 overall_mape = float(np.mean(np.abs(monthly["pct_error"])))  # keskmine absoluuthälve protsentides
 
-# --- Salvesta CSV-d ---
-monthly_path = OUTDIR / "bias_monthly.csv"
-moy_path     = OUTDIR / "bias_month_of_year.csv"
-summary_path = OUTDIR / "bias_summary.txt"
+# """ # --- Salvesta CSV-d ---
+# monthly_path = OUTDIR / "bias_monthly.csv"
+# moy_path     = OUTDIR / "bias_month_of_year.csv"
+# summary_path = OUTDIR / "bias_summary.txt" """
 
-monthly.to_csv(monthly_path, index=False)
-by_moy.to_csv(moy_path, index=False)
+# monthly.to_csv(monthly_path, index=False)
+# by_moy.to_csv(moy_path, index=False)
 
-with open(summary_path, "w", encoding="utf-8") as f:
-    f.write(f"Mudel: y = {a:.3f} + {b:.3f} * T\n")
-    f.write(f"Periood: {df['sum_cons_date'].min().date()} … {df['sum_cons_date'].max().date()}\n")
-    f.write(f"Üldine bias_factor (actual/pred): {overall_bias_factor:.4f}\n")
-    f.write(f"Keskmine |pct_error| (MAPE):      {overall_mape*100:.2f}%\n")
-    f.write("\nKalendrikuu keskmised (Jan..Dec):\n")
-    f.write(by_moy.to_string(index=False))
+# with open(summary_path, "w", encoding="utf-8") as f:
+#     f.write(f"Mudel: y = {a:.3f} + {b:.3f} * T\n")
+#     f.write(f"Periood: {df['sum_cons_date'].min().date()} … {df['sum_cons_date'].max().date()}\n")
+#     f.write(f"Üldine bias_factor (actual/pred): {overall_bias_factor:.4f}\n")
+#     f.write(f"Keskmine |pct_error| (MAPE):      {overall_mape*100:.2f}%\n")
+#     f.write("\nKalendrikuu keskmised (Jan..Dec):\n")
+#     f.write(by_moy.to_string(index=False))
 
-print(f"Kirjutasin: {monthly_path}")
-print(f"Kirjutasin: {moy_path}")
-print(f"Kirjutasin: {summary_path}")
-print(f"Üldine bias_factor = {overall_bias_factor:.4f}  |  MAPE ≈ {overall_mape*100:.2f}%")
+# print(f"Kirjutasin: {monthly_path}")
+# print(f"Kirjutasin: {moy_path}")
+# print(f"Kirjutasin: {summary_path}")
+# print(f"Üldine bias_factor = {overall_bias_factor:.4f}  |  MAPE ≈ {overall_mape*100:.2f}%")
 
-# --- Lihtne graafik: kuu % viga ajas ---
-fig, ax = plt.subplots(figsize=(10,5), dpi=130)
-ax.plot(monthly["month"], monthly["pct_error"]*100.0, marker="o")
-ax.axhline(0, color="k", lw=1)
-ax.set_title("Kuu prognoosi % viga (temp-ainus mudel)")
-ax.set_xlabel("Kuu")
-ax.set_ylabel("% viga  ( (actual - predicted) / actual ) × 100")
-ax.grid(True, linestyle="--", alpha=0.3)
-fig.tight_layout()
-plt.savefig(OUTDIR / "bias_monthly_plot.png", dpi=130)
-plt.show()
+# # --- Lihtne graafik: kuu % viga ajas ---
+# fig, ax = plt.subplots(figsize=(10,5), dpi=130)
+# ax.plot(monthly["month"], monthly["pct_error"]*100.0, marker="o")
+# ax.axhline(0, color="k", lw=1)
+# ax.set_title("Kuu prognoosi % viga (temp-ainus mudel)")
+# ax.set_xlabel("Kuu")
+# ax.set_ylabel("% viga  ( (actual - predicted) / actual ) × 100")
+# ax.grid(True, linestyle="--", alpha=0.3)
+# fig.tight_layout()
+# plt.savefig(OUTDIR / "bias_monthly_plot.png", dpi=130)
+# plt.show()
 
 # --- Näide: kuidas rakendada bias'i prognoosile ---
 # Kui teed tulevikuprogo (ainult temperatuurist) ja tahad kalendrikuu kaupa korrigeerida:
 # 1) leia vastava kuu number m (1..12)
 # 2) korrigeeritud_prognoos = prognoos_temp_pohine * by_moy.loc[by_moy.month_num==m, 'avg_bias_factor'].iloc[0]
+
+# --- Ekspordi mugav API teistele skriptidele -----------------------------
+
+# Selgenimeline DataFrame, mida teised saavad importida
+season_bias_df = season_bias[["season", "avg_bias_factor", "months"]].copy()
+print("\nAastaaja bias (season_bias_df):")
+print(season_bias_df.to_string(index=False))
+
+# Kiire lookup prognoosimiseks (nt apply_bias)
+season_bias_map = season_bias_df.set_index("season")["avg_bias_factor"].to_dict()
+
+def get_season_bias():
+    """Tagasta (DataFrame, dict) – (season_bias_df, season_bias_map)."""
+    return season_bias_df.copy(), dict(season_bias_map)
+
+__all__ = ["season_bias_df", "season_bias_map", "get_season_bias"]
+
