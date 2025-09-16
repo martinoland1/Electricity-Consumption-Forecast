@@ -24,7 +24,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 2. **Build forecast:** Develop an **hourly** electricity consumption forecast model.
 3. **Validate:** Test the forecast **against actuals** and assess accuracy.
 
-### To-Do List
+### Backlog
 
 - [ ] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* @sergeierbin
 - [x] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
@@ -32,7 +32,15 @@ Company X is an electricity sales company that needs **to forecast electricity c
 - [ ] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
 - [ ] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
 
-- [ ] **Analyze daily consumption curves and identify typical daily load patterns.** — *Owner:*
+
+- [ ] **Update the DataFrame & data model** — add `imputed` column, consumption growth, weekday, day-curve coefficient, and consumption forecast. — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
+- [ ] **Estimate temperature-independent consumption trend** — compute the baseline growth coefficient (preferably monthly; optionally daily). — *Owner:*
+- [ ] **Analyze daily consumption curves and identify typical daily load patterns.** — compute a curve coefficient for each weekday.— *Owner:*
+- [ ] **Build next-day hourly forecast** — combine regression, baseline growth, and day-curve; use the average-day temperature forecast. — *Owner:*
+- [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:*
+- [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:*
+- [ ] **Prepare the PowerPoint presentation** — summarize methodology, metrics, visuals, and key takeaways. — *Owner:*
+
 
 ### Open Question  
 Should additional factors be considered in the research plan?  
