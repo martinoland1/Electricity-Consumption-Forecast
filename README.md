@@ -29,8 +29,8 @@ Company X is an electricity sales company that needs **to forecast electricity c
 - [ ] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* @sergeierbin
 - [x] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
 - [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* @sergeierbin
-- [ ] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
-- [ ] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
+- [x] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
+- [x] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
 
 
 - [ ] **Update the DataFrame & data model** — add `imputed` column, consumption growth, weekday, day-curve coefficient, and consumption forecast. — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
