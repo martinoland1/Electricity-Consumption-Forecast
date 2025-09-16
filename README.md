@@ -33,9 +33,9 @@ Company X is an electricity sales company that needs **to forecast electricity c
 - [x] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
 
 - [ ] **Update the DataFrame & data model** — add `imputed` column, consumption growth, weekday, day-curve coefficient, and consumption forecast. — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
-- [ ] **Estimate temperature-independent consumption trend** — compute the baseline growth coefficient (preferably monthly; optionally daily). — *Owner:* @martinoland1
+- [x] **Estimate temperature-independent consumption trend** — compute the baseline growth coefficient (preferably monthly; optionally daily). — *Owner:* @martinoland1
 - [ ] **Analyze daily consumption curves and identify typical daily load patterns.** — compute a curve coefficient for each weekday.— *Owner:* @tarmogede-dev
-- [ ] **Import the temperature forecast dataset into Python using the ?Meteostat? library.** — *Owner:* @martinoland1
+- [x] **Import the temperature forecast dataset into Python using the Meteostat library.** — *Owner:* @martinoland1
 - [ ] **Build next-day hourly forecast** — combine regression, baseline growth, and day-curve; use the average-day temperature forecast. — *Owner:* @sergeierbin
 
 - [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:*
