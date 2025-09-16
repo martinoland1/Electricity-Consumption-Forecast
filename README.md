@@ -6,7 +6,7 @@
 - **Project authors**:  
   - Johannes Kauksi  
     - Email: johanneskauksi@gmail.com  
-    - LinkedIn:[ *link* ](https://www.linkedin.com/in/johannes-kauksi/)
+    - LinkedIn:[Johannes' linkedin](https://www.linkedin.com/in/johannes-kauksi/)
   - Sergei Erbin  
     - Email: sergei.erbin@gmail.com  
     - LinkedIn: [https://www.linkedin.com/in/sergei-erbin/](https://www.linkedin.com/in/sergei-erbin/)   
