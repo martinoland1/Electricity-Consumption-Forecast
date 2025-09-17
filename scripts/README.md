@@ -1,37 +1,18 @@
 | Script | Description | CLI | Python |
-
 |---|---|---|---|
-
 | `elering_consumption.py` | Downloads Estonia electricity consumption from Elering and returns **hourly** data in **Europe/Tallinn**. Supports gap imputation, weekday/weekend flags, Estonian public holidays, and optional **daily** aggregation. Excludes **today** by default to avoid partial days. | `python elering_consumption.py --months 24 --tz Europe/Tallinn --outdir output`<br>`python elering_consumption.py --daily --months 24 --tz Europe/Tallinn`<br>`python elering_consumption.py --months 12 --include-today --no-impute --no-holidays` | `from elering_consumption import get_hourly_consumption, get_daily_consumption`<br>`df_hourly = get_hourly_consumption(months=24, tz="Europe/Tallinn", exclude_today=True, add_weekday=True, add_holidays=True, impute_missing=True)`<br>`df_daily = get_daily_consumption(months=24, tz="Europe/Tallinn", exclude_today=True, add_weekday=True, add_holidays=True, impute_missing_hourly=True)` |
-
 |---|---|---|---|
-
 | `meteostat_temperature.py` | Fetches historical weather from Meteostat and returns **daily average temperature** on the **Europe/Tallinn** calendar. Can also provide hourly data and an **EE-wide average** (`EE_avg`) derived from city columns (e.g., `Tallinn`, `Tartu`, `Pärnu`, `Narva`, `Kuressaare`). Excludes **today** by default to avoid partial days. | `python meteostat_temperature.py --months 24 --tz Europe/Tallinn --outdir output`<br>`python meteostat_temperature.py --daily --months 36 --save-csv` | `from meteostat_temperature import get_daily_temperature`<br>`df_daily = get_daily_temperature(months=24, tz="Europe/Tallinn")` |
-
 |---|---|---|---|
-
 | `regression_analysis.py` | Builds a **daily** dataset by joining Elering consumption with Meteostat temperature (both on **Europe/Tallinn** calendar) and fits a **linear model**: `consumption = a + b * avg_temp`. Provides metrics (R², RMSE, MAE, p-value if SciPy available) and optional plots; can also report separate fits for workdays vs weekends/holidays if those flags exist. | `python regression_analysis.py --months 24`<br>`python regression_analysis.py --months 36 --save-fig`<br>`python regression_analysis.py --months 24 --include-today` | `from regression_analysis import load_daily_frames, run_linreg`<br>`df = load_daily_frames(months=24)`<br>`m = run_linreg(df["hour_day_value"].to_numpy(), df["sum_el_daily_value"].to_numpy())  # returns (slope, intercept, r, r2, p, rmse, mae)` |
-
 |---|---|---|---|
-
 | `bias_analysis.py` | Computes **daily bias** between *actual* consumption and the value **predicted by your regression model(s)**. Builds separate linear models for **workdays** and **offdays** (weekends/EE public holidays), then aggregates `actual / predicted` to derive **bias factors** by **season** or **month**. Supports **segmented bias** (keys like `workday:talv`, `offday:suvi`). Works on Europe/Tallinn calendar, excludes today, and can export tables/plots. | `python bias_analysis.py --mode season --segmented --months 24 --save-csv --save-plot`<br>`python bias_analysis.py --mode month --months 36` | `from bias_analysis import get_bias_factors, get_season_bias_segmented, apply_bias_to_forecast`<br>`factors, meta, table = get_bias_factors(mode="season", segmented=True, months=24)`<br>`season_seg_df, season_map, models = get_season_bias_segmented(months=24)`<br>`df_adj = apply_bias_to_forecast(df=daily_df, bias_map=factors, mode="season", segmented=True)` |
-
 |---|---|---|---|
-
 | `temp_forecast.py` | Fetches a **7-day temperature forecast** from Meteostat and returns **daily averages** on the **Europe/Tallinn** calendar (index at local midnight). Computes an **EE-wide average** `EE_avg` from available city columns (e.g., `Tallinn`, `Tartu`, `Pärnu`, `Narva`, `Kuressaare`). Starts **tomorrow** (excludes today). | `python temp_forecast.py --save-csv`<br>`python temp_forecast.py --tz Europe/Tallinn --outdir output --save-csv` | `from temp_forecast import get_next7_forecast`<br>`df = get_next7_forecast(tz="Europe/Tallinn")  # columns: EE_avg, city cols; 7 rows, starting tomorrow` |
-
 |---|---|---|---|
-
 | `el_consumption_forecast.py` | Produces a **7-day daily consumption forecast** (starting **tomorrow**) for Estonia using Europe/Tallinn time. Combines: temperature forecast (`temp_forecast.py`) ➜ **segmented linear regressions** (workday/offday from `regression_analysis.py`) ➜ applies **bias factors** (season or month) from `bias_analysis.py`. Output includes `date_local`, `yhat_consumption`, `EE_avg_temp_C`, `segment`, `season`, and `bias_factor`. | `python el_consumption_forecast.py --mode season --segmented-bias --months 24 --save-csv --save-plot`<br>`python el_consumption_forecast.py --mode month --no-seg-bias --months 36`<br>`python el_consumption_forecast.py --temp-module temp_forecast.py --save-csv`<br>`python el_consumption_forecast.py --temp-csv output/temp_forecast_daily_next7_tallinn_*.csv --save-csv` | `from el_consumption_forecast import forecast_next7`<br>`daily = forecast_next7(mode="season", segmented_bias=True, months_hist=24)`<br>`print(daily[["date_local","yhat_consumption"]])` |
-
 |---|---|---|---|
-
 | `weekday_profile.py` | Builds **daily load profiles** (hourly distribution) in **Europe/Tallinn** from historical consumption (via `elering_consumption.py` or a CSV). Excludes **today** and **EE public holidays** when training profiles, and is **DST-aware** (handles 23/25-hour days). Also provides a helper to **split daily forecasts into hourly values** using the learned profiles. | `python weekday_profile.py --save-matrix`<br>`python weekday_profile.py --apply-daily-csv output/forecast_consumption_daily_next7_tallinn_*.csv`<br>`python weekday_profile.py --hourly-csv output/elering_consumption_hourly_last24months_tallinn_*.csv --csv-tz Europe/Tallinn --save-matrix` | `from weekday_profile import get_weekday_hour_share_matrix, split_daily_forecast_to_hourly`<br>`M = get_weekday_hour_share_matrix(last_n=6, months=24)`<br>`hourly = split_daily_forecast_to_hourly(daily_df, share_matrix=M, holiday_profile="weekday")` |
-
 |---|---|---|---|
-
 | `electricity_hourly_forecast.py` | Produces a **7-day hourly consumption forecast** in **Europe/Tallinn** by combining the **daily forecast** from `el_consumption_forecast.py` with **weekday load profiles** from `weekday_profile.py`. The pipeline is DST-aware, honors EE public holidays in the profile training, and verifies that hourly sums match the daily forecast. Outputs `datetime_local`, `hour_local`, `weekday`, and `consumption_hourly` (plus daily meta like `yhat_consumption`, `bias_factor` if available). | `python electricity_hourly_forecast.py --save-csv`<br>`python electricity_hourly_forecast.py --daily-csv output/forecast_consumption_daily_next7_tallinn_*.csv --save-csv`<br>`python electricity_hourly_forecast.py --hourly-csv output/elering_consumption_hourly_last24months_tallinn_*.csv --csv-tz Europe/Tallinn --save-csv` | `from electricity_hourly_forecast import main`<br>`hourly = main(save_csv=False)`<br>`hourly = main(use_daily_csv="output/forecast_consumption_daily_next7_tallinn_XXXXXX_XXXXXX.csv", save_csv=True)` |
-
 |---|---|---|---|
-
-
