@@ -3,7 +3,10 @@
 3. The consumption and temperature CSVs were imported into Excel.
 4. **Daily total consumption** and **daily average temperature** were calculated.
 5. A **scatter chart** of daily total consumption vs. daily average temperature showed a strong **linear relationship**.
-6. An **Excel Regression** analysis was performed on the daily consumption vs. temperature data.
-7. Using the resulting regression equation, a **daily consumption forecast** was produced for **5 Sep 2025 – 12 Sep 2025**.
-8. **Daily load profiles** (day curves) were derived for period **X**.
-9. The **daily consumption** was **distributed to hourly values** using the derived day profiles.
+
+[![Scatter Chart](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/scatter_chart.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/scatter_chart.png)
+
+7. An **Excel Regression** analysis was performed on the daily consumption vs. temperature data.
+8. Using the resulting regression equation, a **daily consumption forecast** was produced for **5 Sep 2025 – 12 Sep 2025**.
+9. **Daily load profiles** (day curves) were derived for period **X**.
+10. The **daily consumption** was **distributed to hourly values** using the derived day profiles.
