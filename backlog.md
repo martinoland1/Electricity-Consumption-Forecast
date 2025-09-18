@@ -4,7 +4,7 @@
 - [x] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* Sergei
 
 ## 15.09
-- [x] **Create the initial data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* Tarmo
+- [x] **Create the initial data model diagram and XML.** — *Owners:* Joahnnes, Sergei, Tarmo
 - [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* Sergei
 - [x] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* Tarmo
 - [x] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* Johannes
@@ -25,8 +25,8 @@
 
 ## 18.09
 - [x] **Describe the Excel prototype** — *Owner:* Sergei
-- [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:* tarmo
-- [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:* Joahnnes
+- [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:* Tarmo
+- [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:* Johannes
 
 ## 19.09 - 03.10
 
