@@ -98,7 +98,7 @@ Should additional factors be considered in the research plan?
 
 ### 2. Data Model (verbal explanation)
 
-See the **Data model diagram** in the dedicated section below.  
+See the **DAta model diagram and Data flow** in the dedicated section below.  
 The logical structure can be described as follows:
 
 - **Input layer**: Electricity consumption (Elering JSON/CSV) and temperature data (Meteostat API, Tartu University CSV).  
