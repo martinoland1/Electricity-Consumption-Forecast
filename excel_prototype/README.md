@@ -35,7 +35,7 @@ The goal of the Excel prototype was to explore the correlation between temperatu
    
 ![Hourly Consumption Forecast](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/hourly_consumption_forecast.png)
 
-12.**Overall comparison** between actual and forecasted electricity consumption.  
+12.**Forecast Error Rate** between actual and forecasted electricity consumption.  
  
 ![Consumption vs Forecast % Graphs](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_%25.png)
 
