@@ -1,33 +1,35 @@
 # Backlog
 
 ## 13.09
-- [ ] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* @sergeierbin
+- [x] **Build an Excel prototype for electricity consumption forecasting (import data, run regression, produce forecast, format output).** — *Owner:* Sergei
 
 ## 15.09
-- [x] **Create the data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
-- [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* @sergeierbin
-- [x] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* @tarmogede-dev
-- [x] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* @martinoland1
+- [x] **Create the initial data model diagram and XML.** — *Owners:* @martinoland1 @sergeierbin *Owner:* Tarmo
+- [x] **Import the electricity consumption JSON dataset into Python.** — *Owner:* Sergei
+- [x] **Import the temperature dataset into Python using the Meteostat library.** — *Owner:* Tarmo
+- [x] **Perform a regression analysis in Python to assess the relationship between consumption and temperature.** — *Owner:* Johannes
 
 ## 16.09
-- [ ] **Update the DataFrame & data model** — add `imputed` column, consumption growth, weekday, day-curve coefficient, and consumption forecast. — *Owners:* @martinoland1 @sergeierbin *Owner:* @tarmogede-dev
-- [x] **Estimate temperature-independent consumption trend** — compute the baseline growth coefficient (preferably monthly; optionally daily). — *Owner:* @martinoland1
-- [ ] **Analyze daily consumption curves and identify typical daily load patterns.** — *Owner:* @tarmogede-dev
-- [x] **Import the temperature forecast dataset into Python using the Meteostat library.** — *Owner:* @martinoland1
-- [x] **Build next-day daily forecast** — combine regression and, baseline growth; use the average-day temperature forecast. — *Owner:* @sergeierbin
+- [x] **Update the DataFrame & data model** — add `imputed` column, consumption growth, weekday, day-curve coefficient, and consumption forecast. — *Owners:* Johannes, Sergei, Tarmo
+- [x] **Estimate temperature-independent consumption trend** — compute the baseline growth coefficient (preferably monthly; optionally daily). — *Owner:* Johannes
+- [x] **Analyze daily consumption curves and identify typical daily load patterns.** — *Owner:* Tarmo
+- [x] **Import the temperature forecast dataset into Python using the Meteostat library.** — *Owner:* Johannes
+- [x] **Build next-day daily forecast** — combine regression and, baseline growth; use the average-day temperature forecast. — *Owner:* Sergei
 
 ## 17.09
-- [x] **Compute a curve coefficient for each weekday.** — *Owner:* @sergeierbin
-- [x] **Build next-day hourly forecast** — combine next-day daily forecast and day-curve. — *Owner:* @martinoland1
-- [ ] **Create a business glossary and data table descriptions** — *Owner:* @tarmogede-dev
-- [ ] **Describe the Excel prototype** — *Owner:* @sergeierbin
-- [ ] **Test the forecasting model** — *Owner:* @tarmogede-dev
-- [ ] **Investigate importing Python code into Power BI** — *Owner:* @martinoland1
-- [x] **Refactor scripts to consistently use Europe/Tallinn time** — *Owner:* @sergeierbin
+- [x] **Compute a curve coefficient for each weekday.** — *Owner:* Sergei
+- [x] **Build next-day hourly forecast** — combine next-day daily forecast and day-curve. — *Owner:* Johannes
+- [x] **Create a business glossary and data table descriptions** — *Owner:* Tarmo
+- [x] **Investigate importing Python code into Power BI** — *Owner:* Johannes
+- [x] **Refactor scripts to consistently use Europe/Tallinn time** — *Owner:* Sergei
 
 ## 18.09
-- [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:*
-- [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:*
+- [x] **Describe the Excel prototype** — *Owner:* Sergei
+- [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:* tarmo
+- [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:* Joahnnes
+
+## 19.09 - 03.10
+
 - [ ] **Prepare the PowerPoint presentation** — summarize methodology, metrics, visuals, and key takeaways. — *Owner:*
 
 ## Open Question  
