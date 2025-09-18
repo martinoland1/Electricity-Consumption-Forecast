@@ -28,8 +28,21 @@
 - [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:* Tarmo
 - [ ] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:* Johannes
 
-## 19.09 - 03.10
+## 19.09
 
+
+## Next Tasks  
+- [ ] **User-Friendly Execution** – provide an easy-to-run Python launcher script or Jupyter Notebook. — *Owner:* Sergei
+- [ ] **Document Scripts in README** – describe how to use each script. — *Owner:* Sergei
+- [ ] **Add DataFrame Descriptions** – include DataFrame explanations in the script documentation.  — *Owner:* Sergei 
+
+- [ ] **Quality Check Script** – create a Jupyter Notebook to investigate errors and validate data quality.  
+- [ ] **Python Review** – ask Kaido to review the Python scripts.  
+- [ ] **Data Flow Diagram** – create a high-level data flow visualization.  
+- [ ] **Extend Data Models** – update and refine Python DataFrames.  
+- [ ] **Power BI Data Model** – build a Power BI data model for reporting.  
+- [ ] **Translate Scripts into English** – ensure consistency and accessibility.  
+- [ ] **Error Warning** – add a notification when the forecast error exceeds a defined threshold (e.g., X%).  
 - [ ] **Prepare the PowerPoint presentation** — summarize methodology, metrics, visuals, and key takeaways. — *Owner:*
 
 ## Open Question  
