@@ -37,7 +37,7 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 [![Consumption vs Forecast Graphs](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)
 
-[![Consumption vs Forecast Graphs](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)
+![Consumption vs Forecast % Graphs](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_%25.png)
 
 ## Conclusion
 
