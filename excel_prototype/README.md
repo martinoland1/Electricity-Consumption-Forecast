@@ -43,7 +43,10 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 [![Consumption vs Forecast Graphs](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/consumption_vs_forecast_graphs.png)
 
+14. **Data and calculations** are available here: [Excel Prototype Workbook](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/excel_prototype.xlsx)
+
 ## Conclusion
 
-Temperature is a strong driver of daily electricity consumption: the model explains ~65% of the variance (R²=0.646), and each +1 °C is associated with ~331 units lower daily demand (95% CI: −357…−306). The regression is highly significant (F-test p<1e−83). A simple linear model, **Consumption ≈ 24,131.9 − 331.4 × AvgDailyTemp(°C)**, provides a solid baseline; the remaining ~35% likely reflects weekday and holidays effects, trends, seasonality.
+Temperature is a strong driver of daily electricity consumption: the model explains ~65% of the variance (R²=0.646), and each +1 °C is associated with ~331 units lower daily demand (95% CI: −357…−306). The regression is highly significant (F-test p<1e−83). A simple linear model, **Consumption ≈ 24,131.9 − 331.4 × AvgDailyTemp(°C)**, provides a solid baseline; the remaining ~35% likely reflects weekday and holiday effects, trends, and seasonality.  
 
+A better correlation and more accurate daily forecasts are likely if calculations are performed separately for weekdays and weekends/holidays. Forecast accuracy can also be improved with an adjustment coefficient that accounts for overall demand growth, seasonality, and other unidentified factors. Hourly forecasts can be made more precise by analyzing which daily load profile trend to apply (e.g., from the most recent month, quarter, etc.). The Excel prototype demonstrated that this model is valuable and worth further exploration.
