@@ -29,4 +29,5 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 ## Conclusion
 
-The prototype confirmed that temperature is a strong driver of electricity consumption and can be used for forecasting
+Temperature is a strong driver of daily electricity consumption: the model explains ~65% of the variance (R²=0.646), and each +1 °C is associated with ~331 units lower daily demand (95% CI: −357…−306). The regression is highly significant (F-test p<1e−83). A simple linear model, **Consumption ≈ 24,131.9 − 331.4 × AvgDailyTemp(°C)**, provides a solid baseline; the remaining ~35% likely reflects weekday and holidays effects, trends, seasonality.
+
