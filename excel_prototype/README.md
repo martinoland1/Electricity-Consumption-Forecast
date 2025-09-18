@@ -15,15 +15,18 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 4. **Daily total consumption** and **daily average temperature** were calculated.  
 
-5. A **scatter chart** of daily total consumption vs. daily average temperature showed a strong **linear relationship**.  
+5. A **scatter chart** of daily total consumption vs. daily average temperature showed a strong **linear relationship**.
+     
    [![Scatter Chart](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/scatter_chart.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/scatter_chart.png)
 
-6. An **Excel Regression** analysis was performed on the daily consumption vs. temperature data.  
+7. An **Excel Regression** analysis was performed on the daily consumption vs. temperature data.  
 
-7. Using the resulting regression equation, a **daily consumption forecast** was produced for **5 Sep 2025 – 12 Sep 2025**.  
+8. Using the resulting regression equation, a **daily consumption forecast** was produced for **5 Sep 2025 – 12 Sep 2025**.  
 
-8. **Daily load profiles** (day curves) were derived for the period **X**.  
+9. **Daily load profiles** (day curves) were derived for the period **X**.  
 
-9. The **daily consumption** was **distributed into hourly values** using the derived day profiles.  
+10. The **daily consumption** was **distributed into hourly values** using the derived day profiles.  
 
 ## Conclusion
+
+The prototype confirmed that temperature is a strong driver of electricity consumption and can be used for forecasting
