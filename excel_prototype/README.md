@@ -27,7 +27,7 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 ![Daily Consumption Forecast](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/daily_consumption_forecast.png)
 
-9. **Daily load profiles** (day curves) were derived for the period **X**.
+9. **Daily load profiles** (day curves) were derived based on data from **1 Sep 2024 – 31 Aug 2025**, showing the typical hourly distribution of electricity consumption within a day.
 
 ![Daily Profile](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/daily_ptofile.png)
 
