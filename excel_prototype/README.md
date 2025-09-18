@@ -27,9 +27,11 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 ![Daily Consumption Forecast](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/daily_consumption_forecast.png)
 
-9. **Daily load profiles** (day curves) were derived for the period **X**.  
+9. **Daily load profiles** (day curves) were derived for the period **X**.
 
-10. The **daily consumption** was **distributed into hourly values** using the derived day profiles.  
+![Daily Profile](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/daily_ptofile.png)
+
+11. The **daily consumption** was **distributed into hourly values** using the derived day profiles.  
 
 ## Conclusion
 
