@@ -21,6 +21,8 @@ The goal of the Excel prototype was to explore the correlation between temperatu
 
 7. An **Excel Regression** analysis was performed on the daily consumption vs. temperature data.  
 
+![Regression Analysis](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/excel_prototype/regression_analysis.png)
+
 8. Using the resulting regression equation, a **daily consumption forecast** was produced for **5 Sep 2025 – 12 Sep 2025**.  
 
 9. **Daily load profiles** (day curves) were derived for the period **X**.  
