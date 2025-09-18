@@ -1,3 +1,9 @@
+# Excel prototype
+
+## Purpose of the Excel Prototype  
+The goal of the Excel prototype was to explore the correlation between temperature and electricity consumption and to assess its suitability for forecasting energy demand.
+
+## 
 1. Consumption data (CSV) was taken for the period **1 Sep 2024 – 31 Aug 2025** from the Elering Live page: <https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=search&start=2024-08-31T21:00:00.000Z&end=2025-08-31T20:59:59.000Z&show=table>
 2. Temperature data (CSV) was taken for **1 Sep 2024 – 31 Aug 2025** from the University of Tartu site: <https://meteo.physic.ut.ee/>
 3. The consumption and temperature CSVs were imported into Excel.
