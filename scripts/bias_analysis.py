@@ -5,7 +5,7 @@
 # - Compute monthly bias (actual/predicted), aggregate to month-of-year & season factors
 # - Provide a reusable API + CLI for saving CSV/JSON and plots
 #
-# Usage (CLI):
+# CLI examples:
 #   python bias_analysis.py --months 24 --save-csv --save-plot
 #   python bias_analysis.py --months 24 --segmented --save-csv --save-plot
 #
@@ -16,7 +16,6 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,16 +43,15 @@ try:
     from regression_analysis import load_daily_frames, run_linreg
 except Exception as e:
     raise RuntimeError(
-        "Ei leia regression_analysis.py või import ebaõnnestus. "
-        "Veendu, et fail on samas kaustas ja kompileerub."
+        "Could not import regression_analysis.py. Make sure the file is in the same folder and compiles."
     ) from e
 
-# Season mapping (Estonian)
+# Season mapping (English)
 SEASON_MAP = {
-    12: "talv", 1: "talv", 2: "talv",
-    3: "kevad", 4: "kevad", 5: "kevad",
-    6: "suvi",  7: "suvi",  8: "suvi",
-    9: "sügis", 10: "sügis", 11: "sügis",
+    12: "winter", 1: "winter", 2: "winter",
+    3: "spring",  4: "spring",  5: "spring",
+    6: "summer",  7: "summer",  8: "summer",
+    9: "autumn", 10: "autumn", 11: "autumn",
 }
 
 # --------------------------------
@@ -95,7 +93,7 @@ def _safe_save_json(obj, path: Path) -> Path:
 def _period_strings(months: int, exclude_today: bool, tz: str = LOCAL_TZ) -> Tuple[str, str]:
     """
     Return (start_YYYYMMDD, end_YYYYMMDD) for filenames.
-    If exclude_today=True, end is yesterday.
+    If exclude_today=True, end is yesterday 23:59:59 local.
     """
     now_local = pd.Timestamp.now(tz=tz)
     end_local_excl = now_local.normalize() if exclude_today else now_local
@@ -123,7 +121,7 @@ def load_merged_for_bias(months: int = 24, exclude_today: bool = True, tz: str =
     need = {"sum_cons_date", "sum_el_daily_value", "hour_day_value"}
     missing = need - set(merged.columns)
     if missing:
-        raise RuntimeError(f"Merged datasetist puuduvad veerud: {missing}")
+        raise RuntimeError(f"Merged dataset is missing columns: {missing}")
 
     # Normalize types
     merged = merged.copy()
@@ -137,7 +135,7 @@ def load_merged_for_bias(months: int = 24, exclude_today: bool = True, tz: str =
         subset=["sum_cons_date", "sum_el_daily_value", "hour_day_value"])
 
     if merged.empty:
-        raise RuntimeError("Merged dataset on tühi pärast puhastust.")
+        raise RuntimeError("Merged dataset is empty after cleaning.")
     return merged
 
 # --------------------------------
@@ -146,7 +144,7 @@ def load_merged_for_bias(months: int = 24, exclude_today: bool = True, tz: str =
 
 
 def annotate_segment(df: pd.DataFrame) -> pd.DataFrame:
-    """Lisa segment: workday vs offday (offday = nädalavahetus VÕI riigipüha)."""
+    """Add 'segment' = workday vs offday (offday = weekend OR public holiday)."""
     out = df.copy()
     w = out["is_weekend"] if "is_weekend" in out.columns else pd.Series(
         False, index=out.index)
@@ -185,9 +183,9 @@ def compute_daily_predictions(df: pd.DataFrame) -> Tuple[pd.DataFrame, float, fl
 
 def compute_daily_predictions_segmented(df: pd.DataFrame):
     """
-    Segmendipõhine regressioon: eraldi mudel 'workday' ja 'offday' jaoks.
+    Segment-specific regressions: separate model for 'workday' and 'offday'.
     Returns (df_pred, models, metrics):
-      - df_pred: segmendipõhine y_hat ja resid
+      - df_pred: per-segment y_hat and resid
       - models:  {segment: {"a": intercept, "b": slope}}
       - metrics: {segment: {"r","r2","p_value","rmse","mae"}}
     """
@@ -204,9 +202,11 @@ def compute_daily_predictions_segmented(df: pd.DataFrame):
         gg["resid"] = gg["sum_el_daily_value"] - gg["y_hat"]
         parts.append(gg)
         models[seg] = {"a": float(intercept), "b": float(slope)}
-        metrics[seg] = {"r": float(r), "r2": float(r2),
-                        "p_value": (None if (p is None or (isinstance(p, float) and np.isnan(p))) else float(p)),
-                        "rmse": float(rmse), "mae": float(mae)}
+        metrics[seg] = {
+            "r": float(r), "r2": float(r2),
+            "p_value": (None if (p is None or (isinstance(p, float) and np.isnan(p))) else float(p)),
+            "rmse": float(rmse), "mae": float(mae)
+        }
     df_pred = pd.concat(parts, ignore_index=True).sort_values("sum_cons_date")
     return df_pred, models, metrics
 
@@ -219,20 +219,18 @@ def aggregate_monthly_bias(df_pred: pd.DataFrame) -> pd.DataFrame:
     """
     Aggregate daily predictions to months:
       month (Timestamp, month start), actual, predicted, abs_error, pct_error, bias_factor,
-      month_num (1..12), season (talv/kevad/suvi/sügis).
+      month_num (1..12), season (winter/spring/summer/autumn).
     """
     m = (
         df_pred.assign(_dt=pd.to_datetime(
             df_pred["sum_cons_date"], errors="coerce"))
         .assign(month=lambda d: d["_dt"].dt.to_period("M").dt.to_timestamp())
     )
-
     monthly = (
         m.groupby("month", as_index=False, dropna=False)
          .agg(actual=("sum_el_daily_value", "sum"),
               predicted=("y_hat", "sum"))
     )
-
     monthly["abs_error"] = monthly["actual"] - monthly["predicted"]
     monthly["pct_error"] = np.where(monthly["actual"] != 0,
                                     monthly["abs_error"] / monthly["actual"],
@@ -240,7 +238,6 @@ def aggregate_monthly_bias(df_pred: pd.DataFrame) -> pd.DataFrame:
     monthly["bias_factor"] = np.where(monthly["predicted"] > 0,
                                       monthly["actual"] / monthly["predicted"],
                                       np.nan)
-
     monthly["month_num"] = monthly["month"].dt.month
     monthly["season"] = monthly["month_num"].map(SEASON_MAP)
     return monthly
@@ -351,6 +348,7 @@ def apply_corrections_segmented(monthly_seg: pd.DataFrame, by_moy_seg: pd.DataFr
         month_bias_map.get((r["segment"], int(r["month_num"])), 1.0)
     def _season_corr(r): return r["predicted"] * \
         season_bias_map.get((r["segment"], str(r["season"])), 1.0)
+
     m["pred_month_corr"] = m.apply(_month_corr, axis=1)
     m["pred_season_corr"] = m.apply(_season_corr, axis=1)
     return m
@@ -438,7 +436,7 @@ def get_season_bias_segmented(months: int = 24, exclude_today: bool = True):
 @dataclass
 class BiasMeta:
     mode: str                 # "season" | "month"
-    segmented: bool           # True -> workday/offday eraldi
+    segmented: bool           # True -> separate workday/offday
     months: int
     exclude_today: bool
     period_start: str         # YYYYMMDD
@@ -448,16 +446,19 @@ class BiasMeta:
 
 def get_bias_factors(mode: str = "season", segmented: bool = False, months: int = 24, exclude_today: bool = True):
     """
-    Ühtne sissepääs. Tagastab (factors, meta, table):
+    Unified entry point. Returns (factors, meta, table):
+
       - factors: dict
-          mode="season", segmented=False: {"talv":1.03, "kevad":0.95, ...}
+          mode="season", segmented=False: {"winter":1.03, "spring":0.95, ...}
           mode="month",  segmented=False: {1:1.01, 2:0.99, ... 12:1.02}
-          mode="season", segmented=True:  {"workday:talv":1.02, "offday:talv":1.07, ...}
+          mode="season", segmented=True:  {"workday:winter":1.02, "offday:winter":1.07, ...}
           mode="month",  segmented=True:  {"workday:1":1.01, "offday:1":1.04, ...}
+
       - meta: BiasMeta
-      - table: alus-DataFrame (vastav kuukoond / hooaeg)
+      - table: underlying DataFrame (corresponding aggregation)
     """
     s, e = _period_strings(months, exclude_today, tz=LOCAL_TZ)
+
     if not segmented:
         if mode == "season":
             season_df, season_map = get_season_bias(
@@ -475,8 +476,9 @@ def get_bias_factors(mode: str = "season", segmented: bool = False, months: int 
             return factors, meta, by_moy_df
         else:
             raise ValueError("mode must be 'season' or 'month'")
+
     else:
-        # Segmenteeritud
+        # segmented
         season_seg_df, season_map, _models = get_season_bias_segmented(
             months=months, exclude_today=exclude_today)
         if mode == "season":
@@ -514,10 +516,11 @@ def apply_bias_to_forecast(df: pd.DataFrame,
                            month_col: str = "month_num",
                            out_col: str = "pred_bias_adj") -> pd.DataFrame:
     """
-    Rakenda bias koefitsiendid temp-only prognoosile.
-    - mode='season': eeldab veergu 'season' (talv/kevad/suvi/sügis) või tuletab selle date_col põhjal
-    - mode='month':  eeldab veergu 'month_num' (1..12) või tuletab selle date_col põhjal
-    - segmented=True: eeldab segment_col ('workday'|'offday'); võtmevorming 'workday:talv' vms.
+    Apply bias factors to a temp-only forecast.
+
+    - mode='season': requires column 'season' (winter/spring/summer/autumn) or derives it from date
+    - mode='month' : requires column 'month_num' (1..12) or derives it from date
+    - segmented=True: requires 'segment' (workday/offday); key format e.g. 'workday:winter'
     """
     out = df.copy()
 
@@ -547,16 +550,16 @@ def apply_bias_to_forecast(df: pd.DataFrame,
 
 def _plot_monthly_comparison(df: pd.DataFrame, title: str, outdir: Path, fname: str) -> Path:
     fig, ax = plt.subplots(figsize=(11, 5), dpi=130)
-    ax.plot(df["month"], df["actual"], marker="o", label="Tegelik")
+    ax.plot(df["month"], df["actual"], marker="o", label="Actual")
     ax.plot(df["month"], df["predicted"],
-            marker="s", label="Mudel (ilma korr.)")
+            marker="s", label="Model (uncorrected)")
     ax.plot(df["month"], df["pred_month_corr"],
-            marker="^", label="Kuu-bias korr.")
+            marker="^", label="Month-bias adj.")
     ax.plot(df["month"], df["pred_season_corr"],
-            marker="D", label="Hooaja-bias korr.")
+            marker="D", label="Season-bias adj.")
     ax.set_title(title)
-    ax.set_xlabel("Kuu")
-    ax.set_ylabel("Tarbimine (ühikud)")
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Consumption (MWh)")
     ax.grid(True, linestyle="--", alpha=0.3)
     ax.legend()
     plt.tight_layout()
@@ -585,10 +588,10 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
         acc = summarize_accuracy(monthly_corr)
 
         print(
-            f"\nÜHTNE mudel: y = {a:.3f} + {b:.3f} * T  | R²={metrics['r2']:.4f}, RMSE={metrics['rmse']:.3f}, MAE={metrics['mae']:.3f}")
+            f"\nSINGLE model: y = {a:.3f} + {b:.3f} * T  | R²={metrics['r2']:.4f}, RMSE={metrics['rmse']:.3f}, MAE={metrics['mae']:.3f}")
         print(
-            f"MAPE base: {acc['mape_base']*100:.2f}% | kuu-korr: {acc['mape_month']*100:.2f}% | hooaja-korr: {acc['mape_season']*100:.2f}%")
-        print("\nHooaja koefitsiendid:")
+            f"MAPE base: {acc['mape_base']*100:.2f}% | month-adj: {acc['mape_month']*100:.2f}% | season-adj: {acc['mape_season']*100:.2f}%")
+        print("\nSeason factors:")
         print(season_df.to_string(index=False))
 
         if save_csv:
@@ -603,7 +606,7 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
             _safe_save_json(season_df.set_index("season")["avg_bias_factor"].to_dict(),
                             outdir / f"bias_season_map_{s}_{e}.json")
         if save_plot:
-            _plot_monthly_comparison(monthly_corr, "Tegelik vs prognoosid (ühtne)", outdir,
+            _plot_monthly_comparison(monthly_corr, "Actual vs predictions (single model)", outdir,
                                      f"bias_actual_vs_predictions_{s}_{e}.png")
 
     else:
@@ -618,14 +621,14 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
             monthly_seg, by_moy_seg, season_seg)
         acc_seg = summarize_accuracy_segmented(monthly_corr_seg)
 
-        print("\nSEGMENTEERITUD mudelid:")
+        print("\nSEGMENTED models:")
         for seg, m in models.items():
             met = seg_metrics[seg]
             print(
                 f"  [{seg}] y = {m['a']:.3f} + {m['b']:.3f} * T  | R²={met['r2']:.4f}, RMSE={met['rmse']:.3f}, MAE={met['mae']:.3f}")
-        print("\nSegmentide täpsused (MAPE, overall bias):")
+        print("\nSegment accuracies (MAPE, overall bias):")
         for seg, a in acc_seg.items():
-            print(f"  [{seg}] MAPE base: {a['mape_base']*100:.2f}% | kuu-korr: {a['mape_month']*100:.2f}% | hooaja-korr: {a['mape_season']*100:.2f}% | overall bias: {a['overall_bias_factor']:.4f}")
+            print(f"  [{seg}] MAPE base: {a['mape_base']*100:.2f}% | month-adj: {a['mape_month']*100:.2f}% | season-adj: {a['mape_season']*100:.2f}% | overall bias: {a['overall_bias_factor']:.4f}")
 
         if save_csv:
             outdir.mkdir(parents=True, exist_ok=True)
@@ -635,7 +638,7 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
                            f"bias_month_of_year_segmented_{s}_{e}.csv")
             _safe_save_csv(season_seg,      outdir /
                            f"bias_season_segmented_{s}_{e}.csv")
-            # JSON kaardid: {segment: {month_num: factor}}, {(segment,season): factor}
+            # JSON maps: {segment: {month_num: factor}}, {(segment,season): factor}
             month_map = {}
             for seg, g in by_moy_seg.groupby("segment"):
                 month_map[seg] = g.set_index("month_num")[
@@ -649,7 +652,7 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
 
         if save_plot:
             for seg, df in monthly_corr_seg.groupby("segment"):
-                _plot_monthly_comparison(df, f"Tegelik vs prognoosid ({seg})", outdir,
+                _plot_monthly_comparison(df, f"Actual vs predictions ({seg})", outdir,
                                          f"bias_actual_vs_predictions_{seg}_{s}_{e}.png")
 
 
@@ -659,19 +662,20 @@ def main(months: int = 24, exclude_today: bool = True, save_csv: bool = False, s
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(
-        description="Bias analysis (ühtne või segmenteeritud tööpäev vs offday)")
+        description="Bias analysis (single model or segmented workday vs offday)"
+    )
     parser.add_argument("--months", type=int, default=24,
-                        help="Mitu kuud tagasi (default 24)")
+                        help="How many months of history (default 24).")
     parser.add_argument("--include-today", action="store_true",
-                        help="Kaasa tänane (vaikimisi välja jäetud)")
+                        help="Include today's data (by default it is excluded).")
     parser.add_argument("--save-csv", action="store_true",
-                        help="Salvesta CSV/JSON kausta output/")
+                        help="Save CSV/JSON outputs to output/ directory.")
     parser.add_argument("--save-plot", action="store_true",
-                        help="Salvesta võrdlusgraafikud kausta output/")
+                        help="Save comparison plot(s) to output/ directory.")
     parser.add_argument("--segmented", action="store_true",
-                        help="Kasuta segmendipõhist regressiooni ja bias'i")
+                        help="Use segmented regression and bias (workday vs offday).")
     parser.add_argument("--outdir", type=str, default=str(OUTDIR),
-                        help="Väljundkaust (vaikimisi output/)")
+                        help="Output directory (default: output/).")
     args = parser.parse_args()
 
     exclude_today = not args.include_today

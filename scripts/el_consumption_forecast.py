@@ -25,10 +25,10 @@ OUTDIR = BASE_DIR / "output"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 SEASON_MAP = {
-    12: "talv", 1: "talv", 2: "talv",
-    3: "kevad", 4: "kevad", 5: "kevad",
-    6: "suvi",  7: "suvi",  8: "suvi",
-    9: "sügis", 10: "sügis", 11: "sügis",
+    12: "winter", 1: "winter", 2: "winter",
+    3: "spring",  4: "spring",  5: "spring",
+    6: "summer",  7: "summer",  8: "summer",
+    9: "autumn", 10: "autumn", 11: "autumn",
 }
 
 # ---------------------------
@@ -287,6 +287,11 @@ def forecast_next7(mode: str = "season",
 
     # 2) Päevaklassid Tallinnas
     cls = classify_days_local(temp_s.index)
+    # Normalize season labels to English just in case (fallback safety)
+    ET2EN = {"talv": "winter", "kevad": "spring",
+             "suvi": "summer", "sügis": "autumn"}
+    if "season" in cls.columns:
+        cls["season"] = cls["season"].replace(ET2EN)
 
     # 3) Regressioonid + bias
     models, factors = get_models_and_bias(
