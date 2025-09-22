@@ -147,6 +147,18 @@ This comparison highlights monthly consumption and temperatures across two conse
 - The comparison suggests that even small differences in temperature (e.g., colder January) can cause significant changes in electricity demand.
 
 ## Statistical data analysis
+<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/08ea2dcc-25ea-4fa6-8710-5c3832802e99" />
+Regression Analysis (Daily Consumption vs. Temperature)
+
+We fitted linear regression models to study the relationship between average daily temperature and electricity consumption in Estonia.
+All Days: A strong negative correlation was observed between temperature and consumption. As temperature rises, electricity usage decreases, reflecting reduced heating demand. (Slope ≈ –395 MWh/°C, R² ≈ 0.75).
+Workdays (Mon–Fri, non-holiday): The model shows an even stronger relationship (Slope ≈ –404 MWh/°C, R² ≈ 0.82), indicating that weekday consumption patterns are highly temperature-dependent.
+Weekends & Holidays: The slope is slightly lower (≈ –382 MWh/°C, R² ≈ 0.81), but the correlation remains strong, showing that leisure days also follow the same inverse trend.
+These models will later be integrated into the forecasting pipeline, where the segmented regressions (workdays vs. weekends/holidays) allow us to capture different behavioral patterns and improve accuracy in consumption prediction.
+
+<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/9f00be4e-60bc-4fc2-ad17-ee38230995ec" />
+<img width="728" height="506" alt="image" src="https://github.com/user-attachments/assets/6787e7f2-7a73-43c7-aa26-14b7ab7a67eb" />
+
 
 ## Descriptive report / analysis
 
