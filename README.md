@@ -106,8 +106,15 @@ The logical structure can be described as follows:
 
 [![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
-## Data flow
-[![Data model](docs/el_cons_data_model-data_lineage_model.jpg)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/el_cons_data_model-data_lineage_model.jpg)
+## process/data flow diagram
+<img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
+
+### Forecasting Pipeline Overview
+The model integrates electricity consumption data from Elering and weather information from Meteostat into a combined dataframe. This serves as the central input for the forecasting pipeline:
+- A regression formula is applied to capture the relationship between daily average temperature and electricity consumption.
+- A bias correction module adjusts the regression output to reduce systematic errors (e.g., seasonal or structural effects).
+- A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
+- The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
 
 ## Creation of a sample dataset
@@ -123,7 +130,7 @@ The logical structure can be described as follows:
 ## Data quality check
 
 ## Exploratory data analysis
-1. Yearly consumption and average temperature
+### 1. Yearly consumption and average temperature
 This chart shows the total electricity consumption per year alongside the average air temperature.
 - From 2020 to 2024, consumption remained relatively stable around 8 million MWh, while temperatures varied.
 - The highest consumption was observed in 2021 (8.4M MWh).
@@ -131,19 +138,30 @@ This chart shows the total electricity consumption per year alongside the averag
 - In general, colder years correspond with higher electricity usage.
 <img width="1621" height="728" alt="image" src="https://github.com/user-attachments/assets/57d1f355-6ade-4590-840c-08749fef2fb0" />
 
-2. Monthly consumption and temperature
+### 2. Monthly consumption and temperature
 This visualization illustrates the relationship between consumption and temperature on a monthly level.
 - Winter months (December–February): higher consumption due to heating demand, with temperatures dropping below zero.
 - Summer months (June–August): consumption decreases, while average temperatures peak at 16–19 °C.
 - The inverse relationship is clear – colder months drive higher demand, warmer months lower demand.
 <img width="1381" height="741" alt="image" src="https://github.com/user-attachments/assets/9bcdd81e-6dc6-42d9-834e-b0491fef6d34" />
 
-3. Year-to-year comparison (2023 vs 2024)
+### 3. Year-to-year comparison (2023 vs 2024)
 This comparison highlights monthly consumption and temperatures across two consecutive years.
 - Both years show the same seasonal pattern: higher demand in winter, lower in summer.
 - Temperatures follow a similar curve, but January 2023 was colder than January 2024.
 - The comparison suggests that even small differences in temperature (e.g., colder January) can cause significant changes in electricity demand.
 <img width="1318" height="741" alt="image" src="https://github.com/user-attachments/assets/2b79b65a-62d8-434c-a092-94caa9d7e0e8" />
+
+### 4. Average consumption daily profile
+Daily Consumption Profiles (by Day of the Week)
+This visualization shows the average daily consumption patterns broken down by each day of the week.
+- The chart highlights how electricity usage typically evolves hour by hour across weekdays and weekends:
+- Workdays (Mon–Fri) follow a consistent pattern, with a clear morning peak (around 7–10 AM) and a gradual evening decline.
+- Saturdays display a flatter profile, with less pronounced peaks, indicating more evenly distributed consumption throughout the day.
+- Sundays show the lowest overall demand, especially during the morning hours, reflecting reduced industrial and commercial activity.
+- This analysis provides insights into behavioral and operational differences between weekdays and weekends, which is essential for forecasting hourly demand and adjusting models for different calendar profiles.
+<img width="1303" height="738" alt="image" src="https://github.com/user-attachments/assets/164354f1-1cc7-4e83-9c7b-fc5b3557757b" />
+
 
 
 ## Statistical data analysis
