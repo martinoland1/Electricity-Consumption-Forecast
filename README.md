@@ -147,6 +147,7 @@ This comparison highlights monthly consumption and temperatures across two conse
 - The comparison suggests that even small differences in temperature (e.g., colder January) can cause significant changes in electricity demand.
 
 ## Statistical data analysis
+### Regression Analysis (Daily Consumption vs. Temperature)
 <img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/08ea2dcc-25ea-4fa6-8710-5c3832802e99" />
 Regression Analysis (Daily Consumption vs. Temperature)
 
@@ -158,6 +159,27 @@ These models will later be integrated into the forecasting pipeline, where the s
 
 <img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/9f00be4e-60bc-4fc2-ad17-ee38230995ec" />
 <img width="728" height="506" alt="image" src="https://github.com/user-attachments/assets/6787e7f2-7a73-43c7-aa26-14b7ab7a67eb" />
+
+### Bias calculation
+Seasonal Bias Correction Factors
+To further refine forecasts, we computed bias correction factors by season (Spring, Summer, Autumn, Winter).
+Spring (March–May) and Autumn (September–November): Transitional periods, where actual consumption often deviates from regression estimates due to rapid shifts in heating/cooling needs.
+Winter (December–February): Highest bias adjustments, since cold extremes drive significantly higher electricity usage than predicted by a simple linear trend.
+Summer (June–August): Lowest adjustments, as electricity consumption stabilizes and is less variable with temperature.
+These factors are applied as multipliers to regression-based forecasts, either by season or by month, and can be segmented further into workdays vs. off-days.
+<img width="989" height="390" alt="bias" src="https://github.com/user-attachments/assets/0847b029-2811-4cfe-bb61-a21c8af894e6" />
+
+### Weekday Load Profiles (24×7 Hourly Share Matrix)
+
+We analyzed the average daily consumption patterns across weekdays by building a 24×7 share matrix. Each column (weekday) sums to 1.0, showing how electricity demand is distributed across the 24 hours of the day.
+Key insights:
+Early morning (0–5h): Lowest relative consumption across all weekdays (~3–3.5% of daily total per hour).
+Morning ramp-up (6–9h): Sharp increase, peaking around 8–10h (up to ~5% of daily total per hour), especially on workdays.
+Daytime plateau (10–16h): Stable, elevated demand throughout business hours.
+Evening peak (18–21h): Second wave of demand, stronger on weekends, reflecting household activity.
+Weekday vs Weekend: Weekdays show stronger morning peaks due to industrial and office usage, while weekends flatten daytime demand and shift load toward later hours.
+This matrix is DST-aware and based on the Europe/Tallinn timezone, with public holidays excluded from the training sample. It is later used to adjust hourly forecast distributions once daily consumption is predicted.
+<img width="772" height="440" alt="weekday_profile" src="https://github.com/user-attachments/assets/b090625f-3d6c-4149-bc68-f11673a26697" />
 
 
 ## Descriptive report / analysis
