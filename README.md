@@ -123,6 +123,9 @@ The logical structure can be described as follows:
 ## Data quality check
 
 ## Exploratory data analysis
+<img width="1160" height="694" alt="image" src="https://github.com/user-attachments/assets/feb6322e-b148-49b3-9cc5-21034dd71f94" />
+
+
 
 ## Statistical data analysis
 
