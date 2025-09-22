@@ -123,9 +123,28 @@ The logical structure can be described as follows:
 ## Data quality check
 
 ## Exploratory data analysis
-<img width="1160" height="694" alt="image" src="https://github.com/user-attachments/assets/feb6322e-b148-49b3-9cc5-21034dd71f94" />
 
+<img width="1621" height="728" alt="image" src="https://github.com/user-attachments/assets/57d1f355-6ade-4590-840c-08749fef2fb0" />
+1. Yearly consumption and average temperature
+This chart shows the total electricity consumption per year alongside the average air temperature.
+- From 2020 to 2024, consumption remained relatively stable around 8 million MWh, while temperatures varied.
+- The highest consumption was observed in 2021 (8.4M MWh).
+- Data for 2025 is currently incomplete, showing a lower total (5.6M MWh).
+- In general, colder years correspond with higher electricity usage.
 
+<img width="1381" height="741" alt="image" src="https://github.com/user-attachments/assets/9bcdd81e-6dc6-42d9-834e-b0491fef6d34" />
+2. Monthly consumption and temperature
+This visualization illustrates the relationship between consumption and temperature on a monthly level.
+- Winter months (December–February): higher consumption due to heating demand, with temperatures dropping below zero.
+- Summer months (June–August): consumption decreases, while average temperatures peak at 16–19 °C.
+- The inverse relationship is clear – colder months drive higher demand, warmer months lower demand.
+
+<img width="1318" height="741" alt="image" src="https://github.com/user-attachments/assets/2b79b65a-62d8-434c-a092-94caa9d7e0e8" />
+3. Year-to-year comparison (2023 vs 2024)
+This comparison highlights monthly consumption and temperatures across two consecutive years.
+- Both years show the same seasonal pattern: higher demand in winter, lower in summer.
+- Temperatures follow a similar curve, but January 2023 was colder than January 2024.
+- The comparison suggests that even small differences in temperature (e.g., colder January) can cause significant changes in electricity demand.
 
 ## Statistical data analysis
 
