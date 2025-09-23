@@ -377,6 +377,6 @@ This matrix is DST-aware and based on the Europe/Tallinn timezone, with public h
 <img width="772" height="440" alt="weekday_profile" src="https://github.com/user-attachments/assets/b090625f-3d6c-4149-bc68-f11673a26697" />
 
 
-## Descriptive report / analysis
+## Model Accuracy Evaluation 
 
 ## Data story, conclusions
