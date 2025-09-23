@@ -50,41 +50,6 @@ No personal data are included, and the processing is carried out for research an
 | Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression model.                                      | MWh  |
 | Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
 
-
-- **Electricity Consumption (MWh)** – Hourly electricity demand in megawatt-hours, measured by Elering.  
-- **Temperature (°C)** – Hourly outdoor air temperature from Meteostat or University of Tartu station.  
-- **15-Minute Measurement** – Underlying measurement interval for actual load, aggregated to hourly for forecasting.  
-- **Regression Model** – Statistical model linking consumption with temperature.  
-- **ARIMA Model** – Alternative time-series model considered for comparison.  
-- **Bias Coefficient** – Seasonal correction factor applied to regression forecasts.  
-- **Growth Coefficient** – Baseline trend showing long-term consumption growth.  
-- **Day-Curve Profile** – 24-hour consumption distribution expressed as percentages.  
-- **Workday Profile** – Daily curve for weekdays.  
-- **Offday Profile** – Daily curve for weekends and holidays.  
-- **Forecast Horizon** – Prediction window, 7 days ahead.  
-- **date_local** – Local forecast date.  
-- **datetime_local** – Local timestamp for forecasted hour.  
-- **consumption_hourly** – Hourly forecast consumption in MWh.  
-- **weekday** – Day of week (0=Mon..6=Sun).  
-- **hour_local** – Hour of day in local time.  
-- **segment** – Classification: workday, weekend, holiday.  
-- **season** – Season of year.  
-- **is_weekend** – Weekend flag.  
-- **is_holiday** – Holiday flag.  
-- **month_num** – Month number.  
-- **EE_avg_temp_C** – Average daily temperature.  
-- **bias_key** – Key for bias factor.  
-- **bias_factor** – Bias correction value.  
-- **yhat_base** – Baseline forecast.  
-- **yhat_consumption** – Final forecast.  
-- **DataFrame** – Python tabular data structure.  
-- **ETL** – Extract, Transform, Load process.  
-- **Stand-up Meeting** – Daily coordination meeting.  
-- **Product Owner** – Role responsible for planning.  
-- **Tester** – Role verifying code before merging.  
-
----
-
 ### 2. Data Model (verbal explanation)
 
 See the **DAta model diagram and Data flow** in the dedicated section below.  
