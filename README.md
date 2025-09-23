@@ -256,7 +256,8 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 | yhat_base          | float (MWh, optional)             | Base prediction before bias adjustment |
 | yhat_consumption   | float (MWh, optional)             | Daily consumption forecast (bias-adjusted) carried from daily forecast |
 
-
+## Power BI semantic model
+⚠️ Lisada Power BI semantic model ⚠️
 
 ## Data quality check
 
