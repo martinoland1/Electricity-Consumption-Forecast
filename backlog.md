@@ -45,12 +45,10 @@
 
 ## Next Tasks  
 
-- [ ] **Quality Check Script** – create a Jupyter Notebook to investigate errors and validate data quality.  
-- [ ] **Python Review** – ask Kaido to review the Python scripts.  
-- [ ] **Extend Data Models** – update and refine Python DataFrames.  
-- [ ] **Power BI Data Model** – build a Power BI data model for reporting.  
-- [ ] **Error Warning** – add a notification when the forecast error exceeds a defined threshold (e.g., X%).  
+- [ ] **Python Review** – ask Kaido to review the Python scripts. — *Owner:*
+- [ ] **Extend Data Model and Data lineage** – update and refine Python DataFrames. — *Owner:*
+- [ ] **Power BI Data Model** – build a Power BI data model for reporting.— *Owner:*
+- [ ] **Quality Check Script** – create a Jupyter Notebook to investigate errors and validate data quality. — *Owner:*
+- [ ] Describe the **model accuracy evaluation** — *Owner:*
+- [ ] Describe the **data story, and summarize the conclusions**. — *Owner:*
 - [ ] **Prepare the PowerPoint presentation** — summarize methodology, metrics, visuals, and key takeaways. — *Owner:*
-
-## Open Question  
-Should additional factors be considered in the research plan?  
