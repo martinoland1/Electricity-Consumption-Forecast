@@ -29,6 +29,10 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 [View the backlog here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/backlog.md)
 
+## Excel prototype
+
+[View the Excel prototype here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/excel_prototype)
+
 ## Business Glossary
 
 | Business Term                       | Column name                  | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
