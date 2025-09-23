@@ -37,6 +37,7 @@
 ## 23.09
 - [x] **Add DataFrame Descriptions** – include DataFrame explanations in the script documentation.  — *Owner:* Sergei
 - [x] **Translate Scripts into English** – ensure consistency and accessibility.  — *Owner:* Sergei
+- [ ] **Business glossary refinement**. — *Owner:* Sergei
 
 ## 24.09
 - [ ] **Validate forecast vs actuals** — compare errors and summarize. — *Owner:* Tarmo
