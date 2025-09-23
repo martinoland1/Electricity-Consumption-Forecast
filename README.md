@@ -36,7 +36,7 @@ No personal data are included, and the processing is carried out for research an
 
 ## Business glossary, data model, data dictionary
 
-### 1. Business Glossary
+### Business Glossary
 
 | Business Term                       | Technical Term               | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
 |-------------------------------------|------------------------------|----------------------------------------------------------------------------|---------------|-------------------------------------------------------------------|------|
@@ -50,7 +50,11 @@ No personal data are included, and the processing is carried out for research an
 | Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression model.                                      | MWh  |
 | Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
 
-### 2. Data Model (verbal explanation)
+### Data model
+
+[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
+
+### Data Model (verbal explanation)
 
 See the **DAta model diagram and Data flow** in the dedicated section below.  
 The logical structure can be described as follows:
@@ -85,9 +89,7 @@ The logical structure can be described as follows:
 | yhat_consumption   | Float               | Final daily forecast value |
 
 
-### Data model diagram
 
-[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
 ## process/data flow diagram
 PS! Lisa "Temperature forecast" joonsele!!!
