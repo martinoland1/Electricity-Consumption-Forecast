@@ -148,7 +148,19 @@ The model integrates electricity consumption data from Elering and weather infor
 | Meteostat API     | datetime      | hour_temp_time                   | datetime (tz-aware, Europe/Tallinn) | Measurement time (hourly granularity) |
 | Meteostat API     | temp          | hour_temp_value                  | float (°C)    | Hourly average temperature across Estonian points |
 
-#### 
+#### Hourly (get_hourly_temperature)
+| Source System | Source Column | Python pipeline DataFrame column | Column Format                                    | Description |
+|---------------|---------------|----------------------------------|--------------------------------------------------|-------------|
+| Meteostat API | datetime      | hour_temp_time                   | datetime (tz-aware, Europe/Tallinn)              | Measurement time (hourly granularity) :contentReference[oaicite:0]{index=0} |
+| Meteostat API | temp          | hour_temp_value                  | float (°C)                                       | Hourly average temperature across selected Estonian points (Tallinn, Tartu, Pärnu, Narva, Kuressaare) :contentReference[oaicite:1]{index=1} |
+
+#### Daily (get_daily_temperature)
+| Source System | Source Column | Python pipeline DataFrame column | Column Format                               | Description |
+|---------------|---------------|----------------------------------|---------------------------------------------|-------------|
+| Aggregated    | —             | avg_day_temp_date                | date (local, Europe/Tallinn)                | Local calendar day (aggregation bucket) :contentReference[oaicite:2]{index=2} |
+| Aggregated    | —             | hour_day_value                   | float (°C)                                  | Daily mean temperature (average of hourly values) :contentReference[oaicite:3]{index=3} |
+
+
 
 ## Creation of a sample dataset
 
