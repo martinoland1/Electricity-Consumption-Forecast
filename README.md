@@ -50,6 +50,7 @@ No personal data are included, and the processing is carried out for research an
 
 ## Data model
 
+⚠️ Täienda data model ⚠️
 [![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
 ## Data lineage
