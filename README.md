@@ -116,11 +116,19 @@ The model integrates electricity consumption data from Elering and weather infor
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
+#### Elering API
 | Source System | Source Column | Python pipeline DataFrame column | Column Format | Description |
 |---------------|---------------|----------------------------------|---------------|-------------|
 | Elering API   | timestamp     | sum_cons_time                    | datetime (tz-aware, Europe/Tallinn) | Measurement time (hourly granularity) |
 | Elering API   | consumption   | sum_el_hourly_value              | float (MWh)   | Hourly electricity consumption in MWh |
 
+#### Meteostat API
+| Source System     | Source Column | Python pipeline DataFrame column | Column Format | Description |
+|-------------------|---------------|----------------------------------|---------------|-------------|
+| Meteostat API     | datetime      | hour_temp_time                   | datetime (tz-aware, Europe/Tallinn) | Measurement time (hourly granularity) |
+| Meteostat API     | temp          | hour_temp_value                  | float (°C)    | Hourly average temperature across Estonian points |
+
+#### 
 
 ## Creation of a sample dataset
 
