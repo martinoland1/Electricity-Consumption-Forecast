@@ -54,7 +54,7 @@ No personal data are included, and the processing is carried out for research an
 
 ## Data lineage
 
-PS! Lisa "Temperature forecast" joonsele!!!
+⚠️ Lisa "Temperature forecast" joonsele ⚠️
 <img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
 
 ### Forecasting Pipeline Overview
