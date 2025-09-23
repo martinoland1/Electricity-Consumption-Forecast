@@ -45,8 +45,8 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 ## Data Sources
 
-- **Electricity Consumption (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
-- **Hourly Temperature (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)
+- **Electricity Consumption**: [Elering API](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
+- **Temperature**: [Meteostat API](https://dev.meteostat.net/python/hourly.html)
 
 ## Data protection description – on what basis are the data processed?
 
