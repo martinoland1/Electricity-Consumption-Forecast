@@ -39,14 +39,18 @@ if BASE_DIR not in sys.path:
 try:
     from elering_consumption import get_daily_consumption
 except Exception as e:
-    raise RuntimeError("Ei leia elering_consumption.py või import ebaõnnestus. "
-                       "Veendu, et fail on samas kaustas.") from e
+    raise RuntimeError(
+        "Could not find elering_consumption.py or import failed. "
+        "Ensure the file is in the same directory."
+    ) from e
 
 try:
     from meteostat_temperature import get_daily_temperature
 except Exception as e:
-    raise RuntimeError("Ei leia meteostat_temperature.py või import ebaõnnestus. "
-                       "Veendu, et fail on samas kaustas.") from e
+    raise RuntimeError(
+        "Could not find meteostat_temperature.py or import failed. "
+        "Ensure the file is in the same directory."
+    ) from e
 
 
 # -----------------------------
@@ -59,7 +63,7 @@ def load_daily_frames(months: int = DEFAULT_MONTHS,
     Returns merged daily frame with columns:
       sum_cons_date (date), sum_el_daily_value (float),
       hour_day_value (avg day temp, °C),
-      [weekday, is_weekend, is_holiday] if available.
+      [is_weekend, is_holiday] if available.
     Only overlapping dates are kept (inner join).
     """
     # Daily consumption (already in local calendar, today excluded by default)
@@ -83,11 +87,13 @@ def load_daily_frames(months: int = DEFAULT_MONTHS,
     expected_cons = {"sum_cons_date", "sum_el_daily_value"}
     expected_temp = {"avg_day_temp_date", "hour_day_value"}
     if not expected_cons.issubset(df_cons.columns):
+        missing = expected_cons - set(df_cons.columns)
         raise RuntimeError(
-            f"Consumption frame missing {expected_cons - set(df_cons.columns)}")
+            f"Consumption frame missing columns: {sorted(missing)}")
     if not expected_temp.issubset(df_temp.columns):
+        missing = expected_temp - set(df_temp.columns)
         raise RuntimeError(
-            f"Temperature frame missing {expected_temp - set(df_temp.columns)}")
+            f"Temperature frame missing columns: {sorted(missing)}")
 
     # Ensure date types
     dfc = df_cons.copy()
@@ -98,7 +104,6 @@ def load_daily_frames(months: int = DEFAULT_MONTHS,
         dft["avg_day_temp_date"], errors="coerce").dt.date
 
     # Defensive aggregation (if duplicates)
-    agg_cols = ["sum_el_daily_value"]
     extra_cols = []
     if "is_weekend" in dfc.columns:
         extra_cols.append("is_weekend")
@@ -138,8 +143,10 @@ def load_daily_frames(months: int = DEFAULT_MONTHS,
     merged = merged.dropna()
 
     if merged.empty:
-        raise RuntimeError("Merged dataset is empty after alignment/cleaning. "
-                           "Kontrolli upstream mudeleid, kuupäevi ja ajatsoone.")
+        raise RuntimeError(
+            "Merged dataset is empty after alignment/cleaning. "
+            "Check upstream frames, date ranges, and time zone settings."
+        )
 
     return merged
 
@@ -208,7 +215,7 @@ def plot_segment(df: pd.DataFrame, label: str, xcol="hour_day_value", ycol="sum_
         ax.set_title(label)
 
     ax.set_xlabel("Avg day temperature (°C)")
-    ax.set_ylabel("Daily consumption")
+    ax.set_ylabel("Daily consumption (MWh)")
     ax.grid(True, alpha=0.3)
     return fig
 
@@ -230,7 +237,7 @@ def main(months: int = DEFAULT_MONTHS, exclude_today: bool = True, save_fig: boo
         merged["sum_el_daily_value"].to_numpy(dtype=float),
     )
     print_summary("ALL DAYS — Linear Regression Summary",
-                  "avg day temperature (°C)", "daily consumption",
+                  "avg day temperature (°C)", "daily consumption (MWh)",
                   all_metrics, len(merged),
                   merged["sum_cons_date"].min(), merged["sum_cons_date"].max())
 
@@ -245,14 +252,16 @@ def main(months: int = DEFAULT_MONTHS, exclude_today: bool = True, save_fig: boo
         if not workdays.empty:
             m = run_linreg(workdays["hour_day_value"].to_numpy(float),
                            workdays["sum_el_daily_value"].to_numpy(float))
-            print_summary("WORKDAYS (Mon–Fri, non-holiday)", "avg day temperature (°C)", "daily consumption",
+            print_summary("WORKDAYS (Mon–Fri, non-holiday)",
+                          "avg day temperature (°C)", "daily consumption (MWh)",
                           m, len(workdays), workdays["sum_cons_date"].min(), workdays["sum_cons_date"].max())
             figs.append(("workdays", plot_segment(
                 workdays, "WORKDAYS (Mon–Fri, non-holiday)")))
         if not offdays.empty:
             m = run_linreg(offdays["hour_day_value"].to_numpy(float),
                            offdays["sum_el_daily_value"].to_numpy(float))
-            print_summary("WEEKENDS & HOLIDAYS", "avg day temperature (°C)", "daily consumption",
+            print_summary("WEEKENDS & HOLIDAYS",
+                          "avg day temperature (°C)", "daily consumption (MWh)",
                           m, len(offdays), offdays["sum_cons_date"].min(), offdays["sum_cons_date"].max())
             figs.append(("offdays", plot_segment(
                 offdays, "WEEKENDS & HOLIDAYS")))
@@ -288,8 +297,8 @@ if __name__ == "__main__":
                         help="Include today (default: excluded)")
     parser.add_argument("--save-fig", action="store_true",
                         help="Also save figures into output/")
-    parser.add_argument("--outdir", type=str,
-                        default="output", help="Where to save figures")
+    parser.add_argument("--outdir", type=str, default="output",
+                        help="Where to save figures")
     args = parser.parse_args()
 
     exclude_today = not args.include_today

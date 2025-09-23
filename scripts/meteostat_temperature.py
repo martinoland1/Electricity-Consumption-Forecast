@@ -89,8 +89,10 @@ def _average_points(points: Dict[str, Point], start_local: pd.Timestamp, end_loc
         frames.append(df[["temp"]].rename(columns={"temp": name}))
 
     if not frames:
+        # (EN translation of the previous Estonian message)
         raise RuntimeError(
-            "Meteostat ei tagastanud ühelegi punktile temperatuuri (temp) antud perioodil.")
+            "Meteostat returned no 'temp' values for any point within the requested period."
+        )
 
     # Align to one hourly UTC index and average
     combined = pd.concat(frames, axis=1).sort_index()  # index tz-aware UTC

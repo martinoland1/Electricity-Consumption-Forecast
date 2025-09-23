@@ -1,8 +1,8 @@
-# hourly_forecast.py
-# Tunnipõhine prognoos järgmiseks 7 päevaks (Europe/Tallinn)
-# - Päevaprognoos el_consumption_forecast.forecast_next7(...) kaudu (või --daily-csv)
-# - Tunniks jaotus weekday_profile.split_daily_forecast_to_hourly(...)
-# - DST- ja pühadeteadlik; väljund tasakaalustub tagasi päevatasemele
+# electricity_hourly_forecast.py
+# Hourly forecast for the next 7 days (Europe/Tallinn)
+# - Daily forecast via el_consumption_forecast.forecast_next7(...) (or --daily-csv)
+# - Split into hours via weekday_profile.split_daily_forecast_to_hourly(...)
+# - DST- and public-holiday-aware; hourly totals reconcile back to daily totals
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ OUTDIR = BASE_DIR / "output"
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 
-# --------------------- utilid ---------------------
+# --------------------- utils ---------------------
 def _safe_save_csv(df: pd.DataFrame, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     base, ext = path.with_suffix(""), path.suffix
@@ -42,17 +42,19 @@ def _period_strings_next7(tz: str = LOCAL_TZ) -> Tuple[str, str]:
     return start.strftime("%Y%m%d"), end.strftime("%Y%m%d")
 
 
-# --------------------- abi: failist import ---------------------
+# --------------------- module import helper ---------------------
 def _import_module_from_file(fname: str, modname: str):
-    """Lae .py moodul kindlast failist (registreeri sys.modules alla enne exec’i)."""
+    """
+    Load a .py module from the current folder; register under sys.modules before executing it.
+    """
     import importlib.util
     import contextlib
     fpath = BASE_DIR / fname
     if not fpath.exists():
-        raise FileNotFoundError(f"{fname} ei leitud samas kaustas.")
+        raise FileNotFoundError(f"{fname} not found in the same folder.")
     spec = importlib.util.spec_from_file_location(modname, str(fpath))
     if spec is None or spec.loader is None:
-        raise ImportError(f"Ei saanud importida: {fname}")
+        raise ImportError(f"Could not import: {fname}")
     mod = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = mod
     buf = io.StringIO()
@@ -61,7 +63,7 @@ def _import_module_from_file(fname: str, modname: str):
     return mod
 
 
-# --------------------- päevaprognoosi laadimine ---------------------
+# --------------------- daily forecast loaders ---------------------
 def load_daily_forecast_from_module(
     mode: str = "season",
     segmented_bias: bool = True,
@@ -70,13 +72,14 @@ def load_daily_forecast_from_module(
     temp_csv: Optional[str] = None,
 ) -> pd.DataFrame:
     """
-    Kutsub el_consumption_forecast.forecast_next7(...) ja tagastab DataFrame'i.
-    Eeldab, et el_consumption_forecast.py on samas kaustas.
+    Call el_consumption_forecast.forecast_next7(...) and return a DataFrame.
+    Requires el_consumption_forecast.py in the same folder.
     """
     ecf = _import_module_from_file(
         "el_consumption_forecast.py", "el_consumption_forecast")
     if not hasattr(ecf, "forecast_next7"):
-        raise RuntimeError("el_consumption_forecast.forecast_next7 puudub.")
+        raise RuntimeError(
+            "el_consumption_forecast.forecast_next7 is missing.")
     df = ecf.forecast_next7(
         mode=mode,
         segmented_bias=segmented_bias,
@@ -84,17 +87,21 @@ def load_daily_forecast_from_module(
         temp_module=temp_module,
         temp_csv=temp_csv,
     )
-    # miinimum: date_local (YYYY-MM-DD), yhat_consumption (float)
+    # minimum columns: date_local (YYYY-MM-DD), yhat_consumption (float)
     need = {"date_local", "yhat_consumption"}
     if not need.issubset(df.columns):
         raise RuntimeError(
-            "Päevaprognoos ei sisalda vajalikke veerge: date_local, yhat_consumption")
+            "Daily forecast lacks required columns: date_local, yhat_consumption")
     return df
 
 
 def load_daily_forecast_from_csv(path: str) -> pd.DataFrame:
+    """
+    Load a daily forecast CSV. If date_local/yhat_consumption are missing,
+    try to infer from common alternatives.
+    """
     df = pd.read_csv(path)
-    # kuupäev
+    # date
     if "date_local" not in df.columns:
         for cand in ["date", "Date", "day", "datetime", "dt"]:
             if cand in df.columns:
@@ -107,8 +114,8 @@ def load_daily_forecast_from_csv(path: str) -> pd.DataFrame:
                 break
         if "date_local" not in df.columns:
             raise RuntimeError(
-                "CSV ei sisalda veergu 'date_local' ega tuletatavat kuupäeva.")
-    # väärtus
+                "CSV is missing 'date_local' and no date column could be inferred.")
+    # value
     if "yhat_consumption" not in df.columns:
         for cand in ["yhat", "forecast", "consumption", "daily_yhat", "yhat_day"]:
             if cand in df.columns:
@@ -117,11 +124,11 @@ def load_daily_forecast_from_csv(path: str) -> pd.DataFrame:
                 break
     if "yhat_consumption" not in df.columns:
         raise RuntimeError(
-            "CSV ei sisalda päevaprognoosi veergu (yhat_consumption).")
+            "CSV is missing the daily forecast column 'yhat_consumption'.")
     return df
 
 
-# --------------------- tunniks jaotamine ---------------------
+# --------------------- split into hours ---------------------
 def split_daily_to_hourly(
     daily_df: pd.DataFrame,
     last_n: int = 6,
@@ -131,34 +138,35 @@ def split_daily_to_hourly(
     months_for_profile: int = 24,
 ) -> pd.DataFrame:
     """
-    Kutsub weekday_profile.split_daily_forecast_to_hourly(...) (Eesti aeg, DST-aware).
+    Call weekday_profile.split_daily_forecast_to_hourly(...) (EE local time, DST-aware).
     """
     wp = _import_module_from_file("weekday_profile.py", "weekday_profile")
     if not hasattr(wp, "split_daily_forecast_to_hourly"):
         raise RuntimeError(
-            "weekday_profile.split_daily_forecast_to_hourly puudub.")
+            "weekday_profile.split_daily_forecast_to_hourly is missing.")
     hourly = wp.split_daily_forecast_to_hourly(
         daily_df,
         date_col="date_local",
         value_col="yhat_consumption",
-        # laseb ise arvutada (viimased 'last_n' esinemist)
+        # let the module compute the matrix from the last 'last_n' occurrences
         share_matrix=None,
         last_n=last_n,
-        exclude_today=True,           # profiilidest tänane välja
+        exclude_today=True,           # exclude today from profile training
         holiday_profile=holiday_profile,
-        hourly_csv=hourly_csv,        # kui soovid profiili ehitada CSV põhjal
+        hourly_csv=hourly_csv,        # if you prefer building profiles from CSV
         csv_tz=csv_tz,
-        months=months_for_profile,    # kui profiil ehitatakse API-st, kui palju ajalugu võtta
+        months=months_for_profile,    # history for API-based profile building
     )
-    # mugav lisaveerg
+    # convenience duplicate
     hourly["date_local"] = hourly["datetime_local"].dt.strftime("%Y-%m-%d")
     return hourly
 
 
-# --------------------- kontroll ja salvestus ---------------------
+# --------------------- reconciliation check ---------------------
 def check_daily_hourly_match(hourly_df: pd.DataFrame, daily_df: pd.DataFrame) -> float:
     """
-    Kontroll: kas tunnid summeeruvad päevaprognoosiks. Tagastab max abs suhteline viga (0..).
+    Check whether hourly sums reconcile to the daily forecast.
+    Returns max absolute relative error (>= 0).
     """
     day_sum = hourly_df.groupby("date_local")[
         "consumption_hourly"].sum().rename("sum_hourly")
@@ -174,27 +182,27 @@ def check_daily_hourly_match(hourly_df: pd.DataFrame, daily_df: pd.DataFrame) ->
     return float(np.nanmax(np.abs(rel.values)))
 
 
-# --------------------- CLI töövoog ---------------------
+# --------------------- CLI workflow ---------------------
 def main(
-    # päevaprognoos
+    # daily forecast
     use_daily_csv: Optional[str] = None,
     mode: str = "season",
     segmented_bias: bool = True,
     months_hist: int = 24,
     temp_module: Optional[str] = None,
     temp_csv: Optional[str] = None,
-    # päeva-kõver / jaotus
+    # day profile / split
     last_n: int = 6,
     holiday_profile: str = "weekday",      # 'weekday'|'sunday'|'weekend_avg'
-    # kui soovid profiili ehitada konkreetsest tunnise CSV-st
+    # build profiles from a specific hourly CSV instead of the API
     hourly_csv: Optional[str] = None,
-    # kui hourly_csv ajatemplid on tz-naive, millise vööndina lugeda (nt 'UTC')
+    # interpret tz-naive timestamps in hourly_csv as this zone (e.g., 'UTC')
     csv_tz: str = LOCAL_TZ,
     months_for_profile: int = 24,
-    # väljund
+    # output
     save_csv: bool = False,
 ):
-    # 1) too päevaprognoos
+    # 1) get daily forecast
     if use_daily_csv:
         daily = load_daily_forecast_from_csv(use_daily_csv)
     else:
@@ -206,7 +214,7 @@ def main(
             temp_csv=temp_csv,
         )
 
-    # 2) jaota tunniks (EE aeg)
+    # 2) split into hours (EE time)
     hourly = split_daily_to_hourly(
         daily_df=daily,
         last_n=last_n,
@@ -216,7 +224,7 @@ def main(
         months_for_profile=months_for_profile,
     )
 
-    # 3) lisa päevameta — VÄLDIME duplikaatnimesid (weekday jääb tunnitabelist)
+    # 3) attach daily meta — avoid duplicate names (weekday already in hourly table)
     meta_keep = [c for c in [
         "segment", "season", "is_weekend", "is_holiday",
         "month_num", "EE_avg_temp_C", "bias_key", "bias_factor",
@@ -225,20 +233,20 @@ def main(
     daily_meta = daily[["date_local"] +
                        meta_keep].drop_duplicates("date_local")
 
-    # NB: suffixes=("", "_daily") hoiab tunnitabeli veerud nimedeta muutmata
+    # NB: suffixes=("", "_daily") keeps hourly column names unchanged
     out = hourly.merge(daily_meta, on="date_local",
                        how="left", suffixes=("", "_daily"))
 
-    # 4) kontroll – kas tunnid summeeruvad päevadeks
+    # 4) reconciliation check — hourly vs daily
     max_rel = check_daily_hourly_match(out, daily)
     if np.isfinite(max_rel):
         print(
-            f"[kontroll] Päevasummad vs yhat_consumption — max |rel_diff| ≈ {max_rel*100:.5f}%")
+            f"[check] Hourly → daily reconciliation — max |rel_diff| ≈ {max_rel*100:.5f}%")
 
-    # 5) väljund
+    # 5) output
     out = out.sort_values(["datetime_local"]).reset_index(drop=True)
 
-    print("\n=== Hourly forecast (esimesed 48 rida) ===")
+    print("\n=== Hourly forecast (first 48 rows) ===")
     cols = ["datetime_local", "weekday", "hour_local", "consumption_hourly"]
     cols += [c for c in ["segment", "season", "EE_avg_temp_C",
                          "yhat_consumption", "bias_factor"] if c in out.columns]
@@ -258,36 +266,36 @@ if __name__ == "__main__":
     import argparse
 
     p = argparse.ArgumentParser(
-        description="Järgmise 7 päeva TUNNI-põhine prognoos (Europe/Tallinn)")
-    # Päevaprognoosi allikas
+        description="Hourly electricity consumption forecast for the next 7 days (Europe/Tallinn)")
+    # Daily forecast source
     p.add_argument("--daily-csv", type=str, default=None,
-                   help="Kasuta valmis päevaprognoosi CSV-d (date_local,yhat_consumption)")
+                   help="Use an existing daily forecast CSV (date_local,yhat_consumption)")
     p.add_argument("--mode", choices=["season", "month"], default="season",
-                   help="Bias-tüüp päevaprognoosile (kui ei kasuta --daily-csv)")
-    p.add_argument("--segmented-bias", dest="segmented_bias",
-                   action="store_true", help="Bias segmendi kaupa (workday/offday)")
-    p.add_argument("--no-seg-bias", dest="segmented_bias",
-                   action="store_false", help="Bias mitte segmendi kaupa")
+                   help="Bias type for the daily forecast (if not using --daily-csv)")
+    p.add_argument("--segmented-bias", dest="segmented_bias", action="store_true",
+                   help="Apply bias by segment (workday/offday)")
+    p.add_argument("--no-seg-bias", dest="segmented_bias", action="store_false",
+                   help="Do not apply segment-specific bias")
     p.add_argument("--months", type=int, default=24,
-                   help="Ajalugu (kuudes) päevaprognoosi mudelite/biasi jaoks")
+                   help="History window (months) for daily models/bias")
     p.add_argument("--temp-module", type=str, default=None,
-                   help="Ilma moodul (nt temp_forecast.py)")
+                   help="Temperature module (e.g., temp_forecast.py)")
     p.add_argument("--temp-csv", type=str, default=None,
-                   help="Ilma CSV (sisaldab datetime + EE_avg või linnaveerud)")
-    # Päeva kõver
+                   help="Temperature CSV (must contain datetime + EE_avg or city columns)")
+    # Day profile
     p.add_argument("--last-n", type=int, default=6,
-                   help="Mitu viimast esinemist iga nädalapäeva jaoks profiilis")
+                   help="How many most-recent occurrences per weekday to average")
     p.add_argument("--holiday-profile", choices=["weekday", "sunday", "weekend_avg"], default="weekday",
-                   help="Kuidas käsitleda riigipüha jaotusel")
+                   help="How to handle public holidays when splitting")
     p.add_argument("--hourly-csv", type=str, default=None,
-                   help="Kui soovid profiili ehitada konkreetsest tunnise CSV-st (möödudes API-st)")
+                   help="Build profiles from this hourly CSV instead of the API")
     p.add_argument("--csv-tz", type=str, default=LOCAL_TZ,
-                   help="Kui --hourly-csv ajalised väärtused on TZ-naive, millise vööndina lugeda (nt 'UTC')")
+                   help="If --hourly-csv timestamps are TZ-naive, interpret them in this zone (e.g., 'UTC')")
     p.add_argument("--months-for-profile", type=int, default=24,
-                   help="Kui palju ajalugu võtta profiili jaoks (API režiimis)")
-    # Väljund
+                   help="How much history to scan for profiles (API mode)")
+    # Output
     p.add_argument("--save-csv", action="store_true",
-                   help="Salvesta CSV kausta output/")
+                   help="Save CSV into output/")
 
     p.set_defaults(segmented_bias=True)
     args = p.parse_args()

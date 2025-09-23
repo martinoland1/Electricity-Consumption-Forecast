@@ -1,5 +1,5 @@
 # weekday_profile.py
-# Päeva kõverad (tunnijaotus) Europe/Tallinn ajas + päevaprognoosi jaotus tunniks
+# Weekday load profiles (hourly shares) in Europe/Tallinn time + split daily forecast into hours
 from __future__ import annotations
 
 from typing import Tuple, List, Optional
@@ -19,8 +19,8 @@ WEEKDAY_ORDER: List[str] = [
 ]
 
 # --------------------------------------------------------------------
-# Tunnitarbimise allikas: eelistus elering_consumption.get_hourly_consumption()
-# Fallback: --hourly-csv (valikuline); CSV-s peab olema aeg + tunniväärtus
+# Hourly consumption source: prefer elering_consumption.get_hourly_consumption()
+# Fallback: --hourly-csv (optional); CSV must contain a timestamp + hourly value
 # --------------------------------------------------------------------
 
 
@@ -43,29 +43,30 @@ def _import_elering_client():
 
 def _read_hourly_csv(path: str, csv_tz: str = LOCAL_TZ) -> pd.DataFrame:
     df = pd.read_csv(path)
-    # leia aeg
+    # find timestamp column
     ts_col = None
     for cand in ["sum_cons_time", "datetime", "time", "timestamp", "dt"]:
         if cand in df.columns:
             ts_col = cand
             break
     if ts_col is None:
-        # proovi 1. veerg
+        # try the first column
         cand = df.columns[0]
         try:
             pd.to_datetime(df[cand])
             ts_col = cand
         except Exception:
-            raise RuntimeError(f"CSV-st ei leia ajaveergu: {path}")
+            raise RuntimeError(
+                f"Could not find a timestamp column in CSV: {path}")
 
-    # leia väärtus
+    # find value column
     val_col = None
     for cand in ["sum_el_hourly_value", "consumption", "value", "el_hourly", "load"]:
         if cand in df.columns:
             val_col = cand
             break
     if val_col is None:
-        # võta esimene numbriline veerg peale ajaveeru
+        # take the first numeric column after the timestamp
         for c in df.columns:
             if c == ts_col:
                 continue
@@ -73,14 +74,15 @@ def _read_hourly_csv(path: str, csv_tz: str = LOCAL_TZ) -> pd.DataFrame:
                 val_col = c
                 break
     if val_col is None:
-        raise RuntimeError(f"CSV-st ei leia tunnitarbimise veergu: {path}")
+        raise RuntimeError(
+            f"Could not find an hourly consumption column in CSV: {path}")
 
     out = df[[ts_col, val_col]].rename(
         columns={ts_col: "sum_cons_time", val_col: "sum_el_hourly_value"}).copy()
     out["sum_cons_time"] = pd.to_datetime(
         out["sum_cons_time"], errors="coerce")
 
-    # kui TZ puudub -> eelda csv_tz; kui olemas -> konverteeri EE-sse
+    # if TZ missing -> assume csv_tz; if present -> convert to LOCAL_TZ
     if out["sum_cons_time"].dt.tz is None:
         out["sum_cons_time"] = out["sum_cons_time"].dt.tz_localize(
             csv_tz).dt.tz_convert(LOCAL_TZ)
@@ -99,10 +101,10 @@ def load_hourly_source(
     exclude_today: bool = True
 ) -> pd.DataFrame:
     """
-    Tagasta tunnipõhine DF veergudega:
+    Return an hourly DataFrame with columns:
       - sum_cons_time (tz-aware, Europe/Tallinn)
       - sum_el_hourly_value (float)
-    Eelistus: elering_consumption.get_hourly_consumption(...) -> CSV.
+    Preference: elering_consumption.get_hourly_consumption(...) → CSV fallback.
     """
     if hourly_csv:
         return _read_hourly_csv(hourly_csv, csv_tz=csv_tz)
@@ -113,15 +115,16 @@ def load_hourly_source(
             months=months,
             tz=LOCAL_TZ,
             exclude_today=exclude_today,
-            add_weekday=False,    # teeme ise
-            add_holidays=False,   # teeme ise
+            add_weekday=False,    # we add our own
+            add_holidays=False,   # we add our own
             impute_missing=True,
         )
         need = {"sum_cons_time", "sum_el_hourly_value"}
         if not need.issubset(df.columns):
             raise RuntimeError(
-                "elering_consumption.get_hourly_consumption() ei tagasta nõutud veerge.")
-        # norm TZ
+                "elering_consumption.get_hourly_consumption() did not return required columns."
+            )
+        # normalize TZ
         df = df.copy()
         df["sum_cons_time"] = pd.to_datetime(
             df["sum_cons_time"], errors="coerce")
@@ -134,18 +137,18 @@ def load_hourly_source(
         return df.dropna(subset=["sum_cons_time", "sum_el_hourly_value"])
 
     raise FileNotFoundError(
-        "Ei leia tunniseid andmeid. Lahendused:\n"
-        " - hoia elering_consumption.py samas kaustas (funktsioon get_hourly_consumption)\n"
-        " - või anna CSV tee: --hourly-csv <path> (vajadusel --csv-tz UTC, kui CSV ajatemplid on UTC-naive)"
+        "Hourly data source not found. Options:\n"
+        " - keep elering_consumption.py in the same folder (function get_hourly_consumption)\n"
+        " - OR supply a CSV path: --hourly-csv <path> (use --csv-tz UTC if the CSV timestamps are UTC-naive)"
     )
 
 # --------------------------------------------------------------------
-# Pühad (EE) – määrame kohalikust kuupäevast
+# EE public holidays — computed from local calendar date
 # --------------------------------------------------------------------
 
 
 def _attach_ee_holidays_local(ts: pd.Series) -> pd.Series:
-    """Tagasta bool-seeria 'is_holiday' Eesti riigipühade järgi (kohalik kuupäev)."""
+    """Return a boolean Series 'is_holiday' based on Estonian public holidays (local date)."""
     try:
         import holidays
     except Exception:
@@ -169,7 +172,7 @@ def _attach_ee_holidays_local(ts: pd.Series) -> pd.Series:
         return pd.Series(False, index=ts.index)
 
 # --------------------------------------------------------------------
-# Sisendi ettevalmistus (EE aeg, pühad välja, tänane välja)
+# Input preparation (EE time, exclude holidays, exclude today)
 # --------------------------------------------------------------------
 
 
@@ -180,44 +183,44 @@ def _prepare_hourly_df(
     months: int = 24
 ) -> pd.DataFrame:
     """
-    Vorminda sisend **Eesti aja järgi** ja lisa abiveerud; pühad + tänane välja.
+    Format input in **Estonian local time**, add helper columns; exclude holidays + today.
     """
     df = load_hourly_source(hourly_csv=hourly_csv, csv_tz=csv_tz,
                             months=months, exclude_today=exclude_today)
     if df.empty:
-        raise RuntimeError("weekday_profile: sisendandmestik on tühi.")
+        raise RuntimeError("weekday_profile: input dataset is empty.")
 
-    # Tänane (poolik) välja
+    # Exclude today's (possibly partial) data
     if exclude_today:
         today_local = pd.Timestamp.now(tz=LOCAL_TZ).normalize().date()
         df = df[df["sum_cons_time"].dt.date < today_local]
 
-    # Pühad (EE kohalik kalendrikuupäev)
+    # EE public holidays (local calendar date)
     is_holiday = _attach_ee_holidays_local(df["sum_cons_time"])
     df = df[~is_holiday].copy()
     if df.empty:
         raise RuntimeError(
-            "weekday_profile: pärast pühade/tänase välistamist puuduvad andmed.")
+            "weekday_profile: after excluding holidays/today, no data remains.")
 
-    # Kohalikud abiveerud
+    # Local helper columns
     df["date_local"] = df["sum_cons_time"].dt.date
     df["hour_local"] = df["sum_cons_time"].dt.hour
     df["weekday"] = df["sum_cons_time"].dt.day_name()  # Monday..Sunday
     return df
 
 # --------------------------------------------------------------------
-# Profiili ehitus (DST-safe): iga päeva 24-elemendiline share-vektor
+# Profile building (DST-safe): 24-element share vector per day
 # --------------------------------------------------------------------
 
 
 def _day_share_vector_24(day_df: pd.DataFrame) -> np.ndarray:
     """
-    Ehita ühe kalendripäeva (EE) 24-elemendiline osakaaluvektor:
-      - summeeri topelttunnid (25h päeval),
-      - puuduv tund (23h päeval) = 0,
-      - renormeeritakse nii, et summa = 1.0 (kui päevane kogus >0).
+    Build a 24-element share vector for a single local calendar day:
+      - sum duplicate hours on 25h days,
+      - missing hour on 23h days = 0,
+      - renormalize so the sum equals 1.0 (if the day total > 0).
     """
-    # tunnisummad antud päeval
+    # hourly sums for that day
     sums = day_df.groupby("hour_local")["sum_el_hourly_value"].sum()
     vec = pd.Series(0.0, index=range(24), dtype=float)
     for h, v in sums.items():
@@ -227,15 +230,15 @@ def _day_share_vector_24(day_df: pd.DataFrame) -> np.ndarray:
     total = vec.sum()
     if total > 0:
         vec = vec / total
-    # kui total==0 -> kõik nullid (nii on õige)
+    # if total==0 -> all zeros (that is correct)
     return vec.to_numpy(dtype=float)
 
 
 def _build_profiles_and_days_used(df: pd.DataFrame, last_n: int = 6) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Tagastab:
+    Returns:
       profile_df: (weekday, hour_local, avg_hourly_share_of_day, n_days)
-      days_used:  (weekday, date_local) – millised kuupäevad kaasati
+      days_used:  (weekday, date_local) – which dates were included
     """
     profiles = []
     days_rows = []
@@ -245,14 +248,14 @@ def _build_profiles_and_days_used(df: pd.DataFrame, last_n: int = 6) -> Tuple[pd
         if d_wd.empty:
             continue
 
-        # viimased 'last_n' kuupäeva selle nädalapäeva kohta
+        # the last 'last_n' occurrences of this weekday
         last_days = (d_wd[["date_local"]].drop_duplicates()
                      .sort_values("date_local")
                      .tail(last_n)["date_local"].tolist())
         if not last_days:
             continue
 
-        # kogu päevade share'id, siis elementwise keskmine
+        # accumulate daily share vectors, then take elementwise mean
         share_stack = []
         for d in last_days:
             day_df = d_wd[d_wd["date_local"] == d]
@@ -263,7 +266,7 @@ def _build_profiles_and_days_used(df: pd.DataFrame, last_n: int = 6) -> Tuple[pd
         if not share_stack:
             continue
 
-        mean_vec = np.mean(np.vstack(share_stack), axis=0)  # 24 elem
+        mean_vec = np.mean(np.vstack(share_stack), axis=0)  # 24 elements
         prof = pd.DataFrame({
             "hour_local": np.arange(24, dtype=int),
             "avg_hourly_share_of_day": mean_vec,
@@ -274,7 +277,7 @@ def _build_profiles_and_days_used(df: pd.DataFrame, last_n: int = 6) -> Tuple[pd
 
     if not profiles:
         raise RuntimeError(
-            "weekday_profile: profiile ei õnnestunud koostada (andmeid napib).")
+            "weekday_profile: could not build profiles (insufficient data).")
 
     profile_df = pd.concat(profiles, ignore_index=True).sort_values(
         ["weekday", "hour_local"])
@@ -285,8 +288,8 @@ def _build_profiles_and_days_used(df: pd.DataFrame, last_n: int = 6) -> Tuple[pd
 
 def _profile_df_to_share_matrix(profile_df: pd.DataFrame) -> pd.DataFrame:
     """
-    profile_df -> 24x7 maatriks; iga veeru summa = 1.0.
-    Kui mõni nädalapäev puudub, täida ühtlase jaotusega (1/24).
+    profile_df -> 24x7 matrix; each column sums to 1.0.
+    If a weekday is missing, fill with a uniform distribution (1/24).
     """
     mat = (profile_df.pivot(index="hour_local", columns="weekday", values="avg_hourly_share_of_day")
            .reindex(range(24)))
@@ -319,7 +322,7 @@ def get_weekday_hour_share_matrix(
     csv_tz: str = LOCAL_TZ,
     months: int = 24
 ) -> pd.DataFrame:
-    """Tagastab 24×7 tunnijaotuse maatriksi Eesti aja järgi (veeru-summa==1.0)."""
+    """Return a 24×7 hour-share matrix in local time (each column sum == 1.0)."""
     df_hourly = _prepare_hourly_df(hourly_csv=hourly_csv, csv_tz=csv_tz,
                                    exclude_today=exclude_today, months=months)
     profile_df, _ = _build_profiles_and_days_used(df_hourly, last_n=last_n)
@@ -333,14 +336,14 @@ def get_weekday_days_used(
     csv_tz: str = LOCAL_TZ,
     months: int = 24
 ) -> pd.DataFrame:
-    """Tagastab (weekday, date_local) – millised 'last_n' kuupäeva iga nädalapäeva kohta arvesse läksid."""
+    """Return (weekday, date_local): which 'last_n' dates were included per weekday."""
     df_hourly = _prepare_hourly_df(hourly_csv=hourly_csv, csv_tz=csv_tz,
                                    exclude_today=exclude_today, months=months)
     _, days_used = _build_profiles_and_days_used(df_hourly, last_n=last_n)
     return days_used
 
 # --------------------------------------------------------------------
-# Päevaprognoosi jaotus tunniks (EE ajas, DST-aware)
+# Split a daily forecast into hourly (EE time, DST-aware)
 # --------------------------------------------------------------------
 
 
@@ -352,9 +355,9 @@ def _make_local_hour_range(day: pd.Timestamp) -> pd.DatetimeIndex:
 
 def _stretch_shares_for_dst(base_shares: np.ndarray, hours_index: pd.DatetimeIndex) -> np.ndarray:
     """
-    Kohanda 24-elemendiline jaotus lutile:
-      - 23h päeval: puuduv tund eemaldatakse ja renormeeritakse,
-      - 25h päeval: duplikaattunni osakaal poolitatakse kaheks (kokku sama osakaal), renormeeritakse.
+    Adapt a 24-element distribution to the actual hours in the day:
+      - 23h day: drop the missing hour, renormalize;
+      - 25h day: split the duplicated hour share into two halves, renormalize.
     """
     hours = [ts.hour for ts in hours_index]
     if len(hours) == 24:
@@ -392,7 +395,7 @@ def _stretch_shares_for_dst(base_shares: np.ndarray, hours_index: pd.DatetimeInd
         v = v / v.sum()
         return v
 
-    # ootamatu (mitte 23/24/25)
+    # unexpected (not 23/24/25)
     v = np.ones(len(hours), dtype=float)
     return v / v.size
 
@@ -410,20 +413,20 @@ def split_daily_forecast_to_hourly(
     months: int = 24
 ) -> pd.DataFrame:
     """
-    Võtab päevaprognoosi (nt el_consumption_forecast.py väljund) ja jaotab tunniks.
-    Tagastab veerud: ['datetime_local','weekday','hour_local','consumption_hourly'].
+    Take a daily forecast (e.g., output of el_consumption_forecast.py) and split it into hours.
+    Returns columns: ['datetime_local','weekday','hour_local','consumption_hourly'].
     """
     if share_matrix is None:
         share_matrix = get_weekday_hour_share_matrix(last_n=last_n, exclude_today=exclude_today,
                                                      hourly_csv=hourly_csv, csv_tz=csv_tz, months=months)
 
-    # precompute weekend_avg, kui vaja
+    # precompute weekend_avg if needed
     weekend_avg = None
     if holiday_profile == "weekend_avg":
         weekend_avg = (share_matrix["Saturday"].to_numpy(
         ) + share_matrix["Sunday"].to_numpy()) / 2.0
 
-    # pühad
+    # holidays
     try:
         import holidays
         ee_holidays = holidays.country_holidays("EE", years=range(2000, 2100))
@@ -432,7 +435,7 @@ def split_daily_forecast_to_hourly(
 
     out_rows = []
     for _, row in daily_df.iterrows():
-        # kuupäev -> Timestamp (00:00 EE)
+        # date -> Timestamp (00:00 local)
         day = pd.Timestamp(str(row[date_col]))
         hours_idx = _make_local_hour_range(day)
 
@@ -440,7 +443,7 @@ def split_daily_forecast_to_hourly(
         is_holiday = (day.date() in ee_holidays) if hasattr(
             ee_holidays, "__contains__") else False
 
-        # vali jaotus
+        # choose distribution
         if is_holiday and holiday_profile == "sunday":
             base = share_matrix["Sunday"].to_numpy()
         elif is_holiday and holiday_profile == "weekend_avg":
@@ -453,7 +456,7 @@ def split_daily_forecast_to_hourly(
 
         for ts, hval in zip(hours_idx, hourly_vals):
             out_rows.append({
-                "datetime_local": ts,                # tz-aware EE
+                "datetime_local": ts,                # tz-aware local (EE)
                 "weekday": ts.day_name(),
                 "hour_local": ts.hour,
                 "consumption_hourly": float(hval),
@@ -470,41 +473,41 @@ def split_daily_forecast_to_hourly(
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(
-        description="Päeva kõverad (Eesti aeg) ja päevaprognoosi jaotus tunniks")
+        description="Weekday load profiles (Europe/Tallinn) and split a daily forecast into hourly values")
     parser.add_argument("--last-n", type=int, default=6,
-                        help="Mitu viimast esinemist iga nädalapäeva jaoks")
+                        help="How many most-recent occurrences per weekday to average")
     parser.add_argument("--include-today", action="store_true",
-                        help="Kaasa tänane päev profiili arvutusse (vaikimisi mitte)")
+                        help="Include today in profile training (default: excluded)")
     parser.add_argument("--save-matrix", action="store_true",
-                        help="Salvesta profiilimaatriks CSV-na output/ kausta")
+                        help="Save the profile matrix as CSV into output/")
     parser.add_argument("--apply-daily-csv", type=str, default=None,
-                        help="Jaga CSV-s olev päevaprognoos (date_local,yhat_consumption) tunniks")
+                        help="Split a daily forecast CSV (date_local,yhat_consumption) into hours")
     parser.add_argument("--holiday-profile", choices=["weekday", "sunday", "weekend_avg"],
-                        default="weekday", help="Kuidas käsitleda riigipühi jaotusel")
+                        default="weekday", help="How to handle public holidays in the split")
     parser.add_argument("--hourly-csv", type=str, default=None,
-                        help="(Valikuline) tunnise tarbimise CSV, kui API-moodulit pole")
+                        help="(Optional) hourly consumption CSV, if API module is not available")
     parser.add_argument("--csv-tz", type=str, default=LOCAL_TZ,
-                        help="Kui CSV ajatemplid on TZ-naive, loe neid selles vööndis (nt 'UTC')")
+                        help="If CSV timestamps are TZ-naive, interpret them in this zone (e.g., 'UTC')")
     parser.add_argument("--months", type=int, default=24,
-                        help="Kui pikalt minevikku (kuud) profiili arvutuseks")
+                        help="How many months of history to scan for profiles")
     parser.add_argument("--outdir", type=str,
-                        default=str(OUTDIR), help="Väljundkaust")
+                        default=str(OUTDIR), help="Output directory")
     args = parser.parse_args()
 
     exclude_today = not args.include_today
     outdir = Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
 
-    # 1) Profiilimaatriks
+    # 1) Profile matrix
     M = get_weekday_hour_share_matrix(last_n=args.last_n, exclude_today=exclude_today,
                                       hourly_csv=args.hourly_csv, csv_tz=args.csv_tz, months=args.months)
     DU = get_weekday_days_used(last_n=args.last_n, exclude_today=exclude_today,
                                hourly_csv=args.hourly_csv, csv_tz=args.csv_tz, months=args.months)
 
-    print("\n=== 24x7 profiilimaatriks (veerud sum==1.0) – Eesti aeg ===")
+    print("\n=== 24×7 profile matrix (column sums == 1.0) — Europe/Tallinn ===")
     print(M.round(4).to_string())
 
-    print("\n=== Arvesse läinud kuupäevad (pühad välistatud) ===")
+    print("\n=== Dates included per weekday (public holidays excluded) ===")
     print(DU.to_string(index=False))
 
     if args.save_matrix:
@@ -513,7 +516,7 @@ if __name__ == "__main__":
         print(f"[saved] {outdir / 'weekday_share_matrix.csv'}")
         print(f"[saved] {outdir / 'weekday_days_used.csv'}")
 
-    # 2) Päevaprognoosi jaotus tunniks (soovi korral)
+    # 2) Split a daily forecast into hours (optional)
     if args.apply_daily_csv:
         daily_df = pd.read_csv(args.apply_daily_csv)
         hourly = split_daily_forecast_to_hourly(
