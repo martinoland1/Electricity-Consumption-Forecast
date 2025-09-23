@@ -29,11 +29,6 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 [View the backlog here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/backlog.md)
 
-## Data protection description – on what basis are the data processed?
-
-The data are processed on the basis of publicly available open data.
-No personal data are included, and the processing is carried out for research and analytical purposes.
-
 ## Business Glossary
 
 | Business Term                       | Technical Term               | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
@@ -47,6 +42,16 @@ No personal data are included, and the processing is carried out for research an
 | Hourly share of daily consumption   | `hour_day_value`             | Share of daily consumption attributed to a specific hour.                   | Derived       | `sum_el_hourly_value / sum_el_daily_value`.                       | %    |
 | Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression model.                                      | MWh  |
 | Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
+
+## Data Sources
+
+- **Electricity Consumption (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
+- **Hourly Temperature (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)
+
+## Data protection description – on what basis are the data processed?
+
+The data are processed on the basis of publicly available open data.
+No personal data are included, and the processing is carried out for research and analytical purposes.
 
 ## Data model
 
@@ -247,12 +252,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | yhat_base          | float (MWh, optional)             | Base prediction before bias adjustment |
 | yhat_consumption   | float (MWh, optional)             | Daily consumption forecast (bias-adjusted) carried from daily forecast |
 
-## Creation of a sample dataset
 
-### Data Sources
-
-- **Electricity Consumption (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
-- **Hourly Temperature (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)  
 
 ## Data quality check
 
