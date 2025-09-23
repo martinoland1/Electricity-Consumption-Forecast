@@ -299,6 +299,10 @@ This visualization shows the average daily consumption patterns broken down by e
 - This analysis provides insights into behavioral and operational differences between weekdays and weekends, which is essential for forecasting hourly demand and adjusting models for different calendar profiles.
 <img width="1303" height="738" alt="image" src="https://github.com/user-attachments/assets/164354f1-1cc7-4e83-9c7b-fc5b3557757b" />
 
+### Microsoft Power BI reports
+
+⚠️ Lisada Power BI link ⚠️
+[View the Microsoft Power BI repors here]()
 
 
 ## Statistical data analysis
@@ -332,6 +336,10 @@ Evening peak (18–21h): Second wave of demand, stronger on weekends, reflecting
 Weekday vs Weekend: Weekdays show stronger morning peaks due to industrial and office usage, while weekends flatten daytime demand and shift load toward later hours.
 This matrix is DST-aware and based on the Europe/Tallinn timezone, with public holidays excluded from the training sample. It is later used to adjust hourly forecast distributions once daily consumption is predicted.
 <img width="772" height="440" alt="weekday_profile" src="https://github.com/user-attachments/assets/b090625f-3d6c-4149-bc68-f11673a26697" />
+
+### Jupyter Notebook
+
+[View the Jupyter Notebook here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/scripts/ecf_runner.ipynb)
 
 ## Model Accuracy Evaluation 
 
