@@ -116,6 +116,8 @@ The model integrates electricity consumption data from Elering and weather infor
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
+### Hourly & Daily Electricity Consumption DataFrames (Europe/Tallinn)
+
 #### Elering API
 | Source System | Source Column | Python pipeline DataFrame column | Column Format | Description |
 |---------------|---------------|----------------------------------|---------------|-------------|
@@ -141,6 +143,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | — (derived)   | —             | is_weekend                       | boolean                                      | True if Saturday or Sunday |
 | — (derived)   | —             | is_holiday                       | boolean                                      | True if Estonian public holiday |
 
+### Hourly & Daily Temperature DataFrames (Meteostat, Estonia)
 
 #### Meteostat API
 | Source System     | Source Column | Python pipeline DataFrame column | Column Format | Description |
@@ -159,6 +162,8 @@ The model integrates electricity consumption data from Elering and weather infor
 |---------------|---------------|----------------------------------|---------------------------------------------|-------------|
 | Aggregated    | —             | avg_day_temp_date                | date (local, Europe/Tallinn)                | Local calendar day (aggregation bucket) |
 | Aggregated    | —             | hour_day_value                   | float (°C)                                  | Daily mean temperature (average of hourly values) |
+
+### Joined Daily DataFrame and Regression Output Metrics
 
 #### Joined Daily DataFrame (input for regression)
 | Source System (join)        | Source Column                     | Python pipeline DataFrame column | Column Format               | Description |
@@ -181,6 +186,8 @@ The model integrates electricity consumption data from Elering and weather infor
 | MAE         | float         | Mean Absolute Error (MWh) |
 | Rows used   | integer       | Number of rows included in regression |
 | Date range  | date…date     | Local calendar period covered by the regression |
+
+### Bias Analysis DataFrames (Daily, Monthly, Seasonal, Segmented)
 
 #### Daily merged dataset (input for bias analysis)
 | Source System (join)        | Source Column                     | Python pipeline DataFrame column | Column Format          | Description |
@@ -215,6 +222,79 @@ The model integrates electricity consumption data from Elering and weather infor
 | Season           | season, avg_bias_factor, months  | Average bias per season |
 | Segmented (opt.) | segment, month_num/season, avg_bias_factor, avg_pct_error, months | Separate bias for workdays vs offdays |
 
+### Next-7 days forecast DataFrame (return of get_next7_forecast())
+
+| Source System | Source Column | Python pipeline DataFrame column | Column Format                     | Description |
+|---------------|---------------|----------------------------------|-----------------------------------|-------------|
+| Meteostat API | datetime      | date_local (index)               | date (Europe/Tallinn, 7 rows)     | Local calendar day (D-resample from hourly forecast) |
+| Meteostat API | temp          | Tallinn                          | float (°C)                        | Daily mean temperature for Tallinn (forecast) |
+| Meteostat API | temp          | Tartu                            | float (°C)                        | Daily mean temperature for Tartu (forecast) |
+| Meteostat API | temp          | Pärnu                            | float (°C)                        | Daily mean temperature for Pärnu (forecast) |
+| Meteostat API | temp          | Narva                            | float (°C)                        | Daily mean temperature for Narva (forecast) |
+| Meteostat API | temp          | Kuressaare                       | float (°C)                        | Daily mean temperature for Kuressaare (forecast) |
+| Derived       | —             | EE_avg                           | float (°C)                        | Average across city columns per day |
+
+### 7-Day Daily Electricity Consumption Forecast (Europe/Tallinn)
+
+| Python pipeline DataFrame column | Column Format                     | Description |
+|----------------------------------|-----------------------------------|-------------|
+| date_local                       | string (YYYY-MM-DD, Europe/Tallinn) | Local calendar date (forecast horizon: next 7 days starting tomorrow) |
+| weekday                          | string                            | Day name (e.g., Monday) |
+| is_weekend                       | boolean                           | True if Saturday or Sunday |
+| is_holiday                       | boolean                           | True if Estonian public holiday |
+| segment                          | string                            | Day class: "workday" or "offday" (weekend/holiday) |
+| season                           | string                            | Season label: winter / spring / summer / autumn |
+| month_num                        | integer (1–12)                    | Month number extracted from `date_local` |
+| EE_avg_temp_C                    | float (°C)                        | Forecast daily mean temperature (Estonia average) |
+| bias_key                         | string / int                      | Lookup key for bias factor (e.g., `workday:winter` or month number) |
+| bias_factor                      | float                             | Applied bias multiplier for the day |
+| yhat_base                        | float (MWh)                       | Temperature-only prediction: y = a + b·T |
+| yhat_consumption                 | float (MWh)                       | Final forecast after bias adjustment (`yhat_base * bias_factor`) |
+
+### Weekday Load Profiles and Daily-to-Hourly Forecast Split (Europe/Tallinn)
+
+#### Weekday Hourly Share Matrix (24×7)
+
+| Column       | Column Format | Description |
+|--------------|---------------|-------------|
+| hour_local   | integer (0–23) | Local hour of day (Europe/Tallinn) |
+| Monday…Sunday| float (0–1)    | Average share of daily consumption assigned to this hour for that weekday |
+
+#### Days Used for Profile Calculation
+
+| Column     | Column Format | Description |
+|------------|---------------|-------------|
+| weekday    | string        | Day name (Monday…Sunday) |
+| date_local | date          | Calendar date (Europe/Tallinn) used in profile calculation |
+
+#### Daily Forecast Split to Hourly
+
+| Column             | Column Format                  | Description |
+|--------------------|--------------------------------|-------------|
+| datetime_local     | datetime (tz-aware, Europe/Tallinn) | Hour timestamp |
+| weekday            | string                         | Day name (Monday…Sunday) |
+| hour_local         | integer (0–23)                 | Hour of day |
+| consumption_hourly | float (MWh)                    | Forecast hourly electricity consumption |
+
+### 7-Day Hourly Electricity Consumption Forecast (Europe/Tallinn)
+
+| Column             | Column Format                     | Description |
+|--------------------|-----------------------------------|-------------|
+| datetime_local     | datetime (tz-aware, Europe/Tallinn) | Forecast timestamp for the hour |
+| weekday            | string                            | Day name (Monday…Sunday) |
+| hour_local         | integer (0–23)                    | Local hour of day |
+| consumption_hourly | float (MWh)                       | Forecast hourly electricity consumption |
+| date_local         | string (YYYY-MM-DD)               | Local calendar day (matches forecast horizon) |
+| segment            | string (optional)                 | Workday/offday classification (if available from daily forecast) |
+| season             | string (optional)                 | Season label: winter / spring / summer / autumn |
+| is_weekend         | boolean (optional)                | True if Saturday or Sunday |
+| is_holiday         | boolean (optional)                | True if Estonian public holiday |
+| month_num          | integer (1–12, optional)          | Month number |
+| EE_avg_temp_C      | float (°C, optional)              | Forecast daily mean temperature (Estonia average) |
+| bias_key           | string/int (optional)             | Lookup key used for bias adjustment |
+| bias_factor        | float (optional)                  | Bias multiplier applied |
+| yhat_base          | float (MWh, optional)             | Base prediction before bias adjustment |
+| yhat_consumption   | float (MWh, optional)             | Daily consumption forecast (bias-adjusted) carried from daily forecast |
 
 ## Creation of a sample dataset
 
