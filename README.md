@@ -65,7 +65,7 @@ The model integrates electricity consumption data from Elering and weather infor
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
-## Data table description
+## Data tables description
 
 ### Hourly & Daily Electricity Consumption DataFrames
 
