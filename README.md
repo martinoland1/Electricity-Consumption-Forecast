@@ -344,3 +344,7 @@ This matrix is DST-aware and based on the Europe/Tallinn timezone, with public h
 ## Model Accuracy Evaluation 
 
 ## Data story, conclusions
+
+## Scripts
+
+[View all scripts here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/scripts)
