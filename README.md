@@ -44,7 +44,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 - **Workday Profile** – Daily curve for weekdays.  
 - **Offday Profile** – Daily curve for weekends and holidays.  
 - **Forecast Horizon** – Prediction window, 7 days ahead.  
-- **date_local** – Local forecast date (Europe/Tallinn).  
+- **date_local** – Local forecast date.  
 - **datetime_local** – Local timestamp for forecasted hour.  
 - **consumption_hourly** – Hourly forecast consumption in MWh.  
 - **weekday** – Day of week (0=Mon..6=Sun).  
@@ -73,7 +73,7 @@ See the **DAta model diagram and Data flow** in the dedicated section below.
 The logical structure can be described as follows:
 
 - **Input layer**: Electricity consumption (Elering JSON/CSV) and temperature data (Meteostat API, Tartu University CSV).  
-- **Transformation layer**: Data cleaning, time standardization (Europe/Tallinn), derived columns (`weekday`, `season`, `growth coefficient`).  
+- **Transformation layer**: Data cleaning, time standardization, derived columns (`weekday`, `season`, `growth coefficient`).  
 - **Model layer**: Regression model linking temperature with consumption, corrected by seasonal *bias coefficients*.  
 - **Profile layer**: Daily consumption curves (workday, weekend, holiday) providing *hourly distribution coefficients*.  
 - **Forecast layer**: Daily forecast values are distributed into hourly forecasts using the profiles.  
@@ -107,6 +107,7 @@ The logical structure can be described as follows:
 [![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
 ## process/data flow diagram
+PS! Lisa "Temperature forecast" joonsele!!!
 <img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
 
 ### Forecasting Pipeline Overview
@@ -116,7 +117,7 @@ The model integrates electricity consumption data from Elering and weather infor
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
-### Hourly & Daily Electricity Consumption DataFrames (Europe/Tallinn)
+### Hourly & Daily Electricity Consumption DataFrames
 
 #### Elering API
 | Source System | Source Column | Python pipeline DataFrame column | Column Format | Description |
@@ -222,7 +223,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | Season           | season, avg_bias_factor, months  | Average bias per season |
 | Segmented (opt.) | segment, month_num/season, avg_bias_factor, avg_pct_error, months | Separate bias for workdays vs offdays |
 
-### Next-7 days forecast DataFrame (return of get_next7_forecast())
+### Next-7 days temperature forecast DataFrame (return of get_next7_forecast())
 
 | Source System | Source Column | Python pipeline DataFrame column | Column Format                     | Description |
 |---------------|---------------|----------------------------------|-----------------------------------|-------------|
@@ -234,7 +235,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | Meteostat API | temp          | Kuressaare                       | float (°C)                        | Daily mean temperature for Kuressaare (forecast) |
 | Derived       | —             | EE_avg                           | float (°C)                        | Average across city columns per day |
 
-### 7-Day Daily Electricity Consumption Forecast (Europe/Tallinn)
+### 7-Day Daily Electricity Consumption Forecast
 
 | Python pipeline DataFrame column | Column Format                     | Description |
 |----------------------------------|-----------------------------------|-------------|
@@ -251,7 +252,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | yhat_base                        | float (MWh)                       | Temperature-only prediction: y = a + b·T |
 | yhat_consumption                 | float (MWh)                       | Final forecast after bias adjustment (`yhat_base * bias_factor`) |
 
-### Weekday Load Profiles and Daily-to-Hourly Forecast Split (Europe/Tallinn)
+### Weekday Load Profiles and Daily-to-Hourly Forecast Split
 
 #### Weekday Hourly Share Matrix (24×7)
 
@@ -276,7 +277,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | hour_local         | integer (0–23)                 | Hour of day |
 | consumption_hourly | float (MWh)                    | Forecast hourly electricity consumption |
 
-### 7-Day Hourly Electricity Consumption Forecast (Europe/Tallinn)
+### 7-Day Hourly Electricity Consumption Forecast
 
 | Column             | Column Format                     | Description |
 |--------------------|-----------------------------------|-------------|
