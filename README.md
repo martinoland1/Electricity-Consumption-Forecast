@@ -34,9 +34,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 The data are processed on the basis of publicly available open data.
 No personal data are included, and the processing is carried out for research and analytical purposes.
 
-## Business glossary, data model, data dictionary
-
-### Business Glossary
+## Business Glossary
 
 | Business Term                       | Technical Term               | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
 |-------------------------------------|------------------------------|----------------------------------------------------------------------------|---------------|-------------------------------------------------------------------|------|
@@ -50,12 +48,12 @@ No personal data are included, and the processing is carried out for research an
 | Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression model.                                      | MWh  |
 | Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
 
-### Data model
+## Data model
 
 [![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
+## Data lineage
 
-## process/data flow diagram
 PS! Lisa "Temperature forecast" joonsele!!!
 <img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
 
@@ -65,6 +63,8 @@ The model integrates electricity consumption data from Elering and weather infor
 - A bias correction module adjusts the regression output to reduce systematic errors (e.g., seasonal or structural effects).
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
+
+## Data table description
 
 ### Hourly & Daily Electricity Consumption DataFrames
 
