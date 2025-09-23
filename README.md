@@ -64,15 +64,8 @@ The pipeline imports **electricity consumption data from Elering** and **weather
 - **Regression analysis** captures the correlation between daily average temperature and electricity consumption.  
 - **Bias correction** adjusts the regression output to reduce systematic errors (e.g., seasonal patterns or structural shifts).  
 - **Weekday profiles** distribute daily consumption into hourly values, creating realistic load curves.  
-- **Weather forecasts** are retrieved from Meteostat and used as future temperature inputs for the model.  
+- **Weather forecasts** are retrieved from Meteostat and used as future temperature inputs for the model.
 The pipeline first generates a **daily forecast**, which is then disaggregated into an **hourly forecast** based on weekday and hourly patterns.  
-
-### Forecasting Pipeline Overview
-The model integrates electricity consumption data from Elering and weather information from Meteostat into a combined dataframe. This serves as the central input for the forecasting pipeline:
-- A regression formula is applied to capture the relationship between daily average temperature and electricity consumption.
-- A bias correction module adjusts the regression output to reduce systematic errors (e.g., seasonal or structural effects).
-- A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
-- The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
 
 ## Data model
 
