@@ -53,11 +53,6 @@ Company X is an electricity sales company that needs **to forecast electricity c
 The data are processed on the basis of publicly available open data.
 No personal data are included, and the processing is carried out for research and analytical purposes.
 
-## Data model
-
-⚠️ Täienda data model ⚠️
-[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
-
 ## Data lineage
 
 ⚠️ Lisa "Temperature forecast" joonsele ⚠️
@@ -69,6 +64,11 @@ The model integrates electricity consumption data from Elering and weather infor
 - A bias correction module adjusts the regression output to reduce systematic errors (e.g., seasonal or structural effects).
 - A weekday profile provides the hourly load distribution, refining daily forecasts into hourly demand curves.
 - The pipeline first produces a daily forecast and then disaggregates it into an hourly forecast using the weekday/hourly patterns.
+
+## Data model
+
+⚠️ Täienda data model ⚠️
+[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
 
 ## Data tables description
 
