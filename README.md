@@ -1,12 +1,13 @@
 # Final Project: Electricity Consumption Forecast
 
-## About the Final Project  
+## About the Final Project
+
 - This is the final project of the **Vali-IT Data Analytics 6-week bootcamp**: [vali-it.ee/andmetarkus](https://vali-it.ee/andmetarkus)  
-- **Tech stack**: Python, Visual Studio Code, Jupyter Notebook, Git, GitHub  
+- **Tech stack**: Microsoft Excel, Python, Jupyter Notebook, Visual Studio Code, Git, GitHub, Microsoft Power BI  
 - **Project authors**:  
   - Johannes Kauksi  
     - Email: johanneskauksi@gmail.com  
-    - LinkedIn:[Johannes' linkedin](https://www.linkedin.com/in/johannes-kauksi/)
+    - LinkedIn: [Johannes' linkedin](https://www.linkedin.com/in/johannes-kauksi/)
   - Sergei Erbin  
     - Email: sergei.erbin@gmail.com  
     - LinkedIn: [https://www.linkedin.com/in/sergei-erbin/](https://www.linkedin.com/in/sergei-erbin/)   
@@ -25,9 +26,13 @@ Company X is an electricity sales company that needs **to forecast electricity c
 3. **Validate:** Test the forecast **against actuals** and assess accuracy.
 
 ### 📌 Project Backlog
+
 [View the backlog here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/backlog.md)
 
 ## Data protection description – on what basis are the data processed?
+
+The data are processed on the basis of publicly available open data.
+No personal data are included, and the processing is carried out for research and analytical purposes.
 
 ## Business glossary, data model, data dictionary
 
