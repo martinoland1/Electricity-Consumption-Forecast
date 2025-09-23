@@ -33,6 +33,19 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 ### 1. Business Glossary
 
+| Business Term                       | Technical Term               | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
+|-------------------------------------|------------------------------|----------------------------------------------------------------------------|---------------|-------------------------------------------------------------------|------|
+| Hourly electricity consumption      | `sum_el_hourly_value`        | Amount of electricity consumed during a specific hour.                      | Elering API   | Value provided by Elering API per hour.                           | MWh  |
+| Daily electricity consumption       | `sum_el_daily_value`         | Total electricity consumed in a calendar day.                              | Elering API   | Sum of all 24 hourly values of the day.                           | MWh  |
+| Hourly temperature                  | `hour_temp_value`            | Recorded air temperature for a specific hour.                              | Meteostat     | Meteostat hourly temperature value.                               | °C   |
+| Average daily temperature           | `EE_avg_temp_C`              | The average temperature of all hours in a given day.                       | Meteostat     | Arithmetic mean of 24 hourly temperature values.                  | °C   |
+| Weekday                             | `weekday`                    | Day of the week represented as a number (0–6).                             | Derived       | `weekday(sum_cons_date)` → 0=Monday, …, 6=Sunday.                 | 0–6  |
+| Public holiday                      | `is_holiday`                 | Indicator whether the date is a public holiday.                            | Calendar      | Boolean value: `True` if the date matches the holiday calendar.   | —    |
+| Hourly share of daily consumption   | `hour_day_value`             | Share of daily consumption attributed to a specific hour.                   | Derived       | `sum_el_hourly_value / sum_el_daily_value`.                       | %    |
+| Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression/ARIMA or similar model.                      | MWh  |
+| Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
+
+
 - **Electricity Consumption (MWh)** – Hourly electricity demand in megawatt-hours, measured by Elering.  
 - **Temperature (°C)** – Hourly outdoor air temperature from Meteostat or University of Tartu station.  
 - **15-Minute Measurement** – Underlying measurement interval for actual load, aggregated to hourly for forecasting.  
