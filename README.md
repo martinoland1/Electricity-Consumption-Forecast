@@ -22,7 +22,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 ## Research plan
 
 1. **Analyze correlation:** Examine the relationship between electricity consumption and temperature using historical data.
-2. **Build forecast:** Develop an **hourly** electricity consumption forecast model.
+2. **Build forecast:** Develop an **hourly electricity consumption forecast model**.
 3. **Validate:** Test the forecast **against actuals** and assess accuracy.
 
 ### 📌 Project Backlog
