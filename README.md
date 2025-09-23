@@ -47,7 +47,7 @@ No personal data are included, and the processing is carried out for research an
 | Weekday                             | `weekday`                    | Day of the week represented as a number (0–6).                             | Derived       | `weekday(sum_cons_date)` → 0=Monday, …, 6=Sunday.                 | 0–6  |
 | Public holiday                      | `is_holiday`                 | Indicator whether the date is a public holiday.                            | Calendar      | Boolean value: `True` if the date matches the holiday calendar.   | —    |
 | Hourly share of daily consumption   | `hour_day_value`             | Share of daily consumption attributed to a specific hour.                   | Derived       | `sum_el_hourly_value / sum_el_daily_value`.                       | %    |
-| Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression/ARIMA or similar model.                      | MWh  |
+| Model forecasted consumption        | `yhat_consumption`           | Electricity consumption predicted by the forecasting model.                 | Model         | Output of regression model.                                      | MWh  |
 | Bias-adjusted forecast consumption  | `yhat_consumption_bias_adj`  | Forecast adjusted for systematic error (bias).                             | Model         | `yhat_consumption` plus bias correction or scaling adjustment.    | MWh  |
 
 
