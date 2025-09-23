@@ -58,6 +58,15 @@ No personal data are included, and the processing is carried out for research an
 ⚠️ Lisa "Temperature forecast" joonsele ⚠️
 <img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
 
+### Data Lineage Description  
+
+The pipeline imports **electricity consumption data from Elering** and **weather data from Meteostat**, and merges them into a unified dataframe that serves as the central input for the forecasting process:  
+- **Regression analysis** captures the correlation between daily average temperature and electricity consumption.  
+- **Bias correction** adjusts the regression output to reduce systematic errors (e.g., seasonal patterns or structural shifts).  
+- **Weekday profiles** distribute daily consumption into hourly values, creating realistic load curves.  
+- **Weather forecasts** are retrieved from Meteostat and used as future temperature inputs for the model.  
+The pipeline first generates a **daily forecast**, which is then disaggregated into an **hourly forecast** based on weekday and hourly patterns.  
+
 ### Forecasting Pipeline Overview
 The model integrates electricity consumption data from Elering and weather information from Meteostat into a combined dataframe. This serves as the central input for the forecasting pipeline:
 - A regression formula is applied to capture the relationship between daily average temperature and electricity consumption.
