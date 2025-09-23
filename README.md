@@ -260,6 +260,7 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 ⚠️ Lisada Power BI semantic model ⚠️
 
 ## Data quality check
+⚠️ Lisada Data quality check ⚠️
 
 ## Exploratory data analysis
 ### 1. Yearly consumption and average temperature
