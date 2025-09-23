@@ -31,7 +31,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 ## Business Glossary
 
-| Business Term                       | Technical Term               | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
+| Business Term                       | Column name                  | Definition                                                                 | Source        | Calculation / Logic                                               | Unit |
 |-------------------------------------|------------------------------|----------------------------------------------------------------------------|---------------|-------------------------------------------------------------------|------|
 | Hourly electricity consumption      | `sum_el_hourly_value`        | Amount of electricity consumed during a specific hour.                      | Elering API   | Value provided by Elering API per hour.                           | MWh  |
 | Daily electricity consumption       | `sum_el_daily_value`         | Total electricity consumed in a calendar day.                              | Elering API   | Sum of all 24 hourly values of the day.                           | MWh  |
