@@ -182,6 +182,40 @@ The model integrates electricity consumption data from Elering and weather infor
 | Rows used   | integer       | Number of rows included in regression |
 | Date range  | date…date     | Local calendar period covered by the regression |
 
+#### Daily merged dataset (input for bias analysis)
+| Source System (join)        | Source Column                     | Python pipeline DataFrame column | Column Format          | Description |
+|-----------------------------|-----------------------------------|----------------------------------|------------------------|-------------|
+| Elering × Meteostat (daily) | sum_cons_date / avg_day_temp_date | sum_cons_date                    | date                   | Local calendar date (join key) |
+| Elering API (daily)         | sum_el_daily_value                | sum_el_daily_value               | float (MWh)            | Daily electricity consumption |
+| Meteostat API (daily)       | hour_day_value                    | hour_day_value                   | float (°C)             | Daily average temperature |
+| Derived                     | —                                 | is_weekend                       | boolean                | True if Saturday or Sunday |
+| Derived                     | —                                 | is_holiday                       | boolean                | True if Estonian public holiday |
+| Derived                     | —                                 | segment                          | string                 | “workday” or “offday” (weekend/holiday) |
+| Regression model            | —                                 | y_hat                            | float (MWh)            | Predicted daily consumption (temp-only regression) |
+| Regression model            | —                                 | resid                            | float (MWh)            | Residual (actual – predicted) |
+
+#### Monthly aggregated dataset (from aggregate_monthly_bias)
+
+| Source System | Source Column | Python pipeline DataFrame column | Column Format | Description |
+|---------------|---------------|----------------------------------|---------------|-------------|
+| Aggregated    | —             | month                            | datetime (month start) | Month bucket |
+| Aggregated    | —             | actual                           | float (MWh)   | Monthly actual consumption (sum of daily values) |
+| Aggregated    | —             | predicted                        | float (MWh)   | Monthly predicted consumption (sum of y_hat) |
+| Derived       | —             | abs_error                        | float (MWh)   | Actual – predicted |
+| Derived       | —             | pct_error                        | float         | Relative error (abs_error / actual) |
+| Derived       | —             | bias_factor                      | float         | Actual / predicted |
+| Derived       | —             | month_num                        | integer       | Month number (1–12) |
+| Derived       | —             | season                           | string        | winter / spring / summer / autumn |
+
+#### Bias factors (seasonal / monthly, segmented or not)
+
+| Level            | Columns                          | Description |
+|------------------|----------------------------------|-------------|
+| Month-of-year    | month_num, avg_bias_factor, avg_pct_error, months, season | Average bias per calendar month across history |
+| Season           | season, avg_bias_factor, months  | Average bias per season |
+| Segmented (opt.) | segment, month_num/season, avg_bias_factor, avg_pct_error, months | Separate bias for workdays vs offdays |
+
+
 ## Creation of a sample dataset
 
 ### Data Sources
