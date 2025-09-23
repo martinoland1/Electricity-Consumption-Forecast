@@ -32,7 +32,7 @@
 ## 22.09
 - [x] **Create Power BI reports** — consumption comparison (year/month), day-curve comparison, temperature comparison (year/month), etc. — *Owner:* Johannes
 - [x] **Document Scripts in README** – describe how to use each script. — *Owner:* Sergei
-- [ ] **Data Flow Diagram** – create a high-level data flow visualization.— *Owner:* Johannes
+- [x] **Data Flow Diagram** – create a high-level data flow visualization.— *Owner:* Johannes
 
 ## 23.09
 - [x] **Add DataFrame Descriptions** – include DataFrame explanations in the script documentation.  — *Owner:* Sergei
