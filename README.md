@@ -329,7 +329,6 @@ Weekday vs Weekend: Weekdays show stronger morning peaks due to industrial and o
 This matrix is DST-aware and based on the Europe/Tallinn timezone, with public holidays excluded from the training sample. It is later used to adjust hourly forecast distributions once daily consumption is predicted.
 <img width="772" height="440" alt="weekday_profile" src="https://github.com/user-attachments/assets/b090625f-3d6c-4149-bc68-f11673a26697" />
 
-
 ## Model Accuracy Evaluation 
 
 ## Data story, conclusions
