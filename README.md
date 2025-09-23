@@ -94,7 +94,7 @@ The model integrates electricity consumption data from Elering and weather infor
 | — (derived)   | —             | is_weekend                       | boolean                                      | True if Saturday or Sunday |
 | — (derived)   | —             | is_holiday                       | boolean                                      | True if Estonian public holiday |
 
-### Hourly & Daily Temperature DataFrames (Meteostat, Estonia)
+### Hourly & Daily Temperature DataFrames
 
 #### Meteostat API
 | Source System     | Source Column | Python pipeline DataFrame column | Column Format | Description |
@@ -247,51 +247,12 @@ The model integrates electricity consumption data from Elering and weather infor
 | yhat_base          | float (MWh, optional)             | Base prediction before bias adjustment |
 | yhat_consumption   | float (MWh, optional)             | Daily consumption forecast (bias-adjusted) carried from daily forecast |
 
-### Data Model (verbal explanation)
-
-See the **DAta model diagram and Data flow** in the dedicated section below.  
-The logical structure can be described as follows:
-
-- **Input layer**: Electricity consumption (Elering JSON/CSV) and temperature data (Meteostat API, Tartu University CSV).  
-- **Transformation layer**: Data cleaning, time standardization, derived columns (`weekday`, `season`, `growth coefficient`).  
-- **Model layer**: Regression model linking temperature with consumption, corrected by seasonal *bias coefficients*.  
-- **Profile layer**: Daily consumption curves (workday, weekend, holiday) providing *hourly distribution coefficients*.  
-- **Forecast layer**: Daily forecast values are distributed into hourly forecasts using the profiles.  
-- **Output layer**: Final 7-day forecast table containing hourly consumption (`consumption_hourly`) and supporting metadata (`segment`, `season`, `bias_factor`, etc.).  
-
----
-
-### 3. Data Dictionary
-
-| Column             | Format              | Description |
-|--------------------|--------------------|-------------|
-| date_local         | String (YYYY-MM-DD) | Local forecast date |
-| datetime_local     | Timestamp           | Forecasted hour in local time |
-| consumption_hourly | Float (MWh)         | Forecasted hourly consumption |
-| weekday            | Integer (0–6)       | Day of week (0=Mon..6=Sun) |
-| hour_local         | Integer (0–23)      | Hour of day in local time |
-| segment            | String              | Workday / weekend / holiday classification |
-| season             | String              | Season: winter, spring, summer, autumn |
-| is_weekend         | Boolean             | Weekend flag |
-| is_holiday         | Boolean             | Holiday flag |
-| month_num          | Integer (1–12)      | Month number |
-| EE_avg_temp_C      | Float (°C)          | Average daily temperature in Estonia |
-| bias_key           | String              | Key for bias factor (e.g., segment + season) |
-| bias_factor        | Float               | Bias correction factor |
-| yhat_base          | Float               | Baseline forecast without daily curve adjustment |
-| yhat_consumption   | Float               | Final daily forecast value |
-
-
-
 ## Creation of a sample dataset
 
 ### Data Sources
 
 - **Electricity Consumption (JSON)** – [Elering Swagger](https://dashboard.elering.ee/assets/swagger-ui/index.html)  
-- **Electricity Consumption (CSV)** – [Elering LIVE](https://dashboard.elering.ee/et/system/with-plan/production-consumption?interval=minute&period=days&start=2025-09-14T21:00:00.000Z&end=2025-09-15T20:59:59.999Z)  
-
 - **Hourly Temperature (Meteostat Python Library)** – [Meteostat Python Library](https://dev.meteostat.net/python/hourly.html)  
-- **Hourly temperature (CSV)** – [University of Tartu, Institute of Physics Weather Station](https://meteo.physic.ut.ee/)  
 
 ## Data quality check
 
