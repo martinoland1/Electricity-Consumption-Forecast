@@ -151,16 +151,36 @@ The model integrates electricity consumption data from Elering and weather infor
 #### Hourly (get_hourly_temperature)
 | Source System | Source Column | Python pipeline DataFrame column | Column Format                                    | Description |
 |---------------|---------------|----------------------------------|--------------------------------------------------|-------------|
-| Meteostat API | datetime      | hour_temp_time                   | datetime (tz-aware, Europe/Tallinn)              | Measurement time (hourly granularity) :contentReference[oaicite:0]{index=0} |
-| Meteostat API | temp          | hour_temp_value                  | float (°C)                                       | Hourly average temperature across selected Estonian points (Tallinn, Tartu, Pärnu, Narva, Kuressaare) :contentReference[oaicite:1]{index=1} |
+| Meteostat API | datetime      | hour_temp_time                   | datetime (tz-aware, Europe/Tallinn)              | Measurement time (hourly granularity) |
+| Meteostat API | temp          | hour_temp_value                  | float (°C)                                       | Hourly average temperature across selected Estonian points (Tallinn, Tartu, Pärnu, Narva, Kuressaare) |
 
 #### Daily (get_daily_temperature)
 | Source System | Source Column | Python pipeline DataFrame column | Column Format                               | Description |
 |---------------|---------------|----------------------------------|---------------------------------------------|-------------|
-| Aggregated    | —             | avg_day_temp_date                | date (local, Europe/Tallinn)                | Local calendar day (aggregation bucket) :contentReference[oaicite:2]{index=2} |
-| Aggregated    | —             | hour_day_value                   | float (°C)                                  | Daily mean temperature (average of hourly values) :contentReference[oaicite:3]{index=3} |
+| Aggregated    | —             | avg_day_temp_date                | date (local, Europe/Tallinn)                | Local calendar day (aggregation bucket) |
+| Aggregated    | —             | hour_day_value                   | float (°C)                                  | Daily mean temperature (average of hourly values) |
 
+#### Joined Daily DataFrame (input for regression)
+| Source System (join)        | Source Column                     | Python pipeline DataFrame column | Column Format               | Description |
+|-----------------------------|-----------------------------------|----------------------------------|-----------------------------|-------------|
+| Elering × Meteostat (daily) | sum_cons_date / avg_day_temp_date | sum_cons_date                    | date (Europe/Tallinn)       | Join key: local calendar date |
+| Elering API (daily)         | sum_el_daily_value                | sum_el_daily_value               | float (MWh)                 | Daily electricity consumption (MWh) |
+| Meteostat API (daily)       | hour_day_value                    | hour_day_value                   | float (°C)                  | Daily average temperature (°C) |
+| Derived (flags)             | —                                 | is_weekend                       | boolean                     | True if the day is Saturday or Sunday |
+| Derived (flags)             | —                                 | is_holiday                       | boolean                     | True if the day is an Estonian public holiday |
 
+#### Regression Output Metrics (printed by the script)
+| Field       | Column Format | Description |
+|-------------|---------------|-------------|
+| slope       | float         | Change in daily consumption per +1 °C (MWh/°C) |
+| intercept   | float         | Expected daily consumption at 0 °C (MWh) |
+| R           | float         | Pearson correlation coefficient between consumption and temperature |
+| R²          | float         | Coefficient of determination – share of variance explained by the model |
+| p-value     | float / N/A   | Statistical significance (if SciPy is available); otherwise “N/A” |
+| RMSE        | float         | Root Mean Square Error (MWh) – average model error magnitude |
+| MAE         | float         | Mean Absolute Error (MWh) |
+| Rows used   | integer       | Number of rows included in regression |
+| Date range  | date…date     | Local calendar period covered by the regression |
 
 ## Creation of a sample dataset
 
