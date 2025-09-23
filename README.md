@@ -122,6 +122,26 @@ The model integrates electricity consumption data from Elering and weather infor
 | Elering API   | timestamp     | sum_cons_time                    | datetime (tz-aware, Europe/Tallinn) | Measurement time (hourly granularity) |
 | Elering API   | consumption   | sum_el_hourly_value              | float (MWh)   | Hourly electricity consumption in MWh |
 
+#### Hourly (get_hourly_consumption)
+| Source System | Source Column | Python pipeline DataFrame column | Column Format                                    | Description |
+|---------------|---------------|----------------------------------|--------------------------------------------------|-------------|
+| Elering API   | timestamp     | sum_cons_time                    | datetime (tz-aware, Europe/Tallinn)              | Measurement time (hourly granularity) |
+| Elering API   | consumption   | sum_el_hourly_value              | float (MWh)                                      | Hourly electricity consumption in MWh |
+| — (derived)   | —             | imputed                          | boolean                                          | True, if value was filled by neighbor interpolation |
+| — (derived)   | —             | weekday                          | string                                           | Day name (e.g., Monday, Tuesday) |
+| — (derived)   | —             | is_weekend                       | boolean                                          | True if Saturday or Sunday |
+| — (derived)   | —             | is_holiday                       | boolean                                          | True if Estonian public holiday |
+
+#### Daily (get_daily_consumption)
+| Source System | Source Column | Python pipeline DataFrame column | Column Format                               | Description |
+|---------------|---------------|----------------------------------|---------------------------------------------|-------------|
+| Aggregated    | —             | sum_cons_date                    | date (local, Europe/Tallinn)                | Local calendar day (aggregation bucket) |
+| Aggregated    | —             | sum_el_daily_value               | float (MWh)                                  | Daily electricity consumption in MWh (sum of hourly values) |
+| — (derived)   | —             | weekday                          | string                                       | Day name (e.g., Monday, Tuesday) |
+| — (derived)   | —             | is_weekend                       | boolean                                      | True if Saturday or Sunday |
+| — (derived)   | —             | is_holiday                       | boolean                                      | True if Estonian public holiday |
+
+
 #### Meteostat API
 | Source System     | Source Column | Python pipeline DataFrame column | Column Format | Description |
 |-------------------|---------------|----------------------------------|---------------|-------------|
