@@ -261,10 +261,27 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 | yhat_consumption   | float (MWh, optional)             | Daily consumption forecast (bias-adjusted) carried from daily forecast |
 
 ## Source data quality check
-⚠️ Lisada Data quality check ⚠️
-[![Hourly consumption quality check](docs/consumption_quality_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/consumption_quality_check.png)
+
+We are performing a quality check on 3 external data sources:  
+
+1. **Hourly consumption (Elering)**  
+   - Validates imported hourly electricity data.  
+   - Checks coverage, timezone, and imputation rate.  
+   - Highlights gaps, duplicates, or NaNs so issues can be fixed early.
+  
+[![Hourly consumption quality check](docs/consumption_quality_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/consumption_quality_check.png)  
+
+2. **Historical temperatures (Meteostat)**  
+   - Ensures completeness of hourly temperature imports per city.  
+   - Reports coverage, missing values, and previews missing timestamps.  
+   - Optionally exports full gap lists into CSV files.  
 
 [![Meteostat import quality check](docs/meteostat_quality_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat_quality_check.png)
+
+3. **7-day temperature forecast (Meteostat)**  
+   - Confirms that the 7-day daily forecast is complete for each city and `EE_avg`.  
+   - Prints available vs. missing days and lists exact missing dates.  
+   - Flags gaps so forecasts remain reliable for modeling.  
 
 [![Meteostat 7-day forecast checkl](docs/meteostat%20_forecast_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat%20_forecast_check.png)
 
