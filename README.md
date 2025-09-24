@@ -262,6 +262,11 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 
 ## Source data quality check
 ⚠️ Lisada Data quality check ⚠️
+[![Hourly consumption quality check](docs/consumption_quality_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/consumption_quality_check.png)
+
+[![Meteostat import quality check](docs/meteostat_quality_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat_quality_check.png)
+
+[![Meteostat 7-day forecast checkl](docs/meteostat%20_forecast_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat%20_forecast_check.png)
 
 ## Power BI semantic model
 ⚠️ Lisada Power BI semantic model ⚠️
