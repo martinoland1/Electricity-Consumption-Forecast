@@ -55,8 +55,9 @@ The data are processed on the basis of publicly available open data.
 No personal data are included, and the processing is carried out for research and analytical purposes.
 
 ## Data lineage
+[<img width="1077" height="371" alt="image" src="https://github.com/user-attachments/assets/6e2e1121-f547-4ea5-ba24-d774fedde3ed" />
+](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/data_flow_process_diagram.png)
 
-<img width="1226" height="367" alt="image" src="https://github.com/user-attachments/assets/cb21c7ec-66fc-4bd7-ba54-e3e9632b7be3" />
 
 ### Data Lineage Description  
 
