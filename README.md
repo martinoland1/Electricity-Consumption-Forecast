@@ -365,4 +365,5 @@ The statistical data analysis presented above can be explored in more detail in 
 
 ## Scripts
 
-[View all scripts here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/scripts)
+The scripts used in the Jupyter Notebook, along with their descriptions, can be found in the Scripts folder.
+[View all scripts here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/scripts)
