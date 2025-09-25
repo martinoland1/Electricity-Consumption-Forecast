@@ -320,7 +320,7 @@ This visualization shows the average daily consumption patterns broken down by e
 
 ### Microsoft Power BI reports
 The charts and data shown above can be explored in more detail in the Power BI report.
-[[View the Microsoft Power BI repors here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/temperature_and_consumption_report_powerBI.pbix)
+[View the Microsoft Power BI repors here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/temperature_and_consumption_report_powerBI.pbix)
 
 ## Statistical data analysis
 ### Regression Analysis (Daily Consumption vs. Temperature)
