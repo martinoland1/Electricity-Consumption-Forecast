@@ -31,7 +31,8 @@ Company X is an electricity sales company that needs **to forecast electricity c
 
 ### Excel prototype
 
-[View the Excel prototype here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/excel_prototype)
+The study was initiated with an Excel prototype, designed to explore the correlation between temperature and electricity consumption and to assess its suitability for forecasting energy demand.
+[View the Excel prototype and description here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/excel_prototype)
 
 ## Business Glossary
 
