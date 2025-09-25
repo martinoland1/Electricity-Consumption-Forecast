@@ -25,11 +25,7 @@ Company X is an electricity sales company that needs **to forecast electricity c
 2. **Build forecast:** Develop an **hourly electricity consumption forecast model**.
 3. **Validate:** Test the forecast **against actuals** and assess accuracy.
 
-### 📌 Project Backlog
-
-[View the backlog here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/backlog.md)
-
-### Excel prototype
+## Excel prototype
 
 The study was initiated with an Excel prototype, designed to explore the correlation between temperature and electricity consumption and to assess its suitability for forecasting energy demand.
 [View the Excel prototype and description here](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/excel_prototype)
