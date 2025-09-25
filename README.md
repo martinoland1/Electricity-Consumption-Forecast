@@ -361,6 +361,13 @@ This matrix is DST-aware and based on the Europe/Tallinn timezone, with public h
 [<img width="772" height="440" alt="image" src="https://github.com/user-attachments/assets/2f84d396-f03e-4d0f-902d-48e3e607d325" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/weekday_load_profile.png)
 
 
+### Daily and hourly consumption forecast
+
+Based on the regression formula, the temperature forecast, and the bias coefficient, it is possible to predict daily electricity consumption.
+Using weekday profiles, the daily consumption forecast can then be distributed across hours to produce an hourly forecast.
+
+[![Daily and hourly consumption forecast](docs/7day_forecast.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/7day_forecast.png)  
+
 ### Jupyter Notebook
 
 The statistical data analysis presented above can be explored in more detail in the Jupyter Notebook.
