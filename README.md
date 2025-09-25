@@ -72,7 +72,8 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 
 ## Data model
 
-<img width="874" height="309" alt="image" src="https://github.com/user-attachments/assets/eae64e03-778a-42ff-8bba-4ea0cdafdc62" />
+[<img width="874" height="309" alt="image" src="https://github.com/user-attachments/assets/eae64e03-778a-42ff-8bba-4ea0cdafdc62" />
+](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/data_model.png?raw=true)
 
 ## Data tables description
 
@@ -283,7 +284,7 @@ We are performing a quality check on 3 external data sources:
 
 ## Power BI semantic model
 
-<img width="877" height="609" alt="image" src="https://github.com/user-attachments/assets/f7fe6ded-1262-4dcd-b4cd-296d4a135d62" />
+[<img width="877" height="609" alt="image" src="https://github.com/user-attachments/assets/f7fe6ded-1262-4dcd-b4cd-296d4a135d62" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/powerbi_semantic_model.png?raw=true)
 
 
 ## Exploratory data analysis
@@ -293,14 +294,14 @@ This chart shows the total electricity consumption per year alongside the averag
 - The highest consumption was observed in 2021 (8.4M MWh).
 - Data for 2025 is currently incomplete, showing a lower total (5.6M MWh).
 - In general, colder years correspond with higher electricity usage.
-<img width="1621" height="728" alt="image" src="https://github.com/user-attachments/assets/57d1f355-6ade-4590-840c-08749fef2fb0" />
+[<img width="1621" height="728" alt="image" src="https://github.com/user-attachments/assets/d67b4205-2600-4418-8b42-4d8affe73b43" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/yearly_temp_and_cons_model.png?raw=true)
+
 
 ### 2. Monthly consumption and temperature
 This visualization illustrates the relationship between consumption and temperature on a monthly level.
 - Winter months (December–February): higher consumption due to heating demand, with temperatures dropping below zero.
 - Summer months (June–August): consumption decreases, while average temperatures peak at 16–19 °C.
 - The inverse relationship is clear – colder months drive higher demand, warmer months lower demand.
-<img width="1381" height="741" alt="image" src="https://github.com/user-attachments/assets/9bcdd81e-6dc6-42d9-834e-b0491fef6d34" />
 
 ### 3. Year-to-year comparison (2023 vs 2024)
 This comparison highlights monthly consumption and temperatures across two consecutive years.
