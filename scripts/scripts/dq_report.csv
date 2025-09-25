@@ -1,4 +1,0 @@
-time;subject;code;level;message;details
-2025-09-22T12:39:49.630253+00:00;with_plan_df;MISSING_RATE;ERROR;Puuduvus veerus 'consumption' 6.2%;
-2025-09-22T12:39:49.630418+00:00;with_plan_df;MISSING_RATE;ERROR;Puuduvus veerus 'plan' 1.0%;
-2025-09-22T12:39:49.639579+00:00;comparison;MISSING_VALUES;ERROR;Puuduvad väärtused veerus 'elering_plan': 84;
