@@ -59,8 +59,7 @@ No personal data are included, and the processing is carried out for research an
 
 ## Data lineage
 
-⚠️ Lisa "Temperature forecast" joonsele ⚠️
-<img width="1065" height="363" alt="image" src="https://github.com/user-attachments/assets/ea669326-ffac-4d55-a19c-2ca80ae854f0" />
+<img width="1226" height="367" alt="image" src="https://github.com/user-attachments/assets/cb21c7ec-66fc-4bd7-ba54-e3e9632b7be3" />
 
 ### Data Lineage Description  
 
@@ -75,8 +74,8 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 
 ## Data model
 
-⚠️ Täienda data model ⚠️
-[![Data model](docs/data_model.png)](https://raw.githubusercontent.com/martinoland1/Electricity-Consumption-Forecast/main/docs/data_model.png)
+<img width="874" height="309" alt="image" src="https://github.com/user-attachments/assets/eae64e03-778a-42ff-8bba-4ea0cdafdc62" />
+
 
 ## Data tables description
 
@@ -286,7 +285,9 @@ We are performing a quality check on 3 external data sources:
 [![Meteostat 7-day forecast checkl](docs/meteostat%20_forecast_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat%20_forecast_check.png)
 
 ## Power BI semantic model
-⚠️ Lisada Power BI semantic model ⚠️
+Power BI semantic model ⚠️
+<img width="877" height="609" alt="image" src="https://github.com/user-attachments/assets/f7fe6ded-1262-4dcd-b4cd-296d4a135d62" />
+
 
 ## Exploratory data analysis
 ### 1. Yearly consumption and average temperature
@@ -323,9 +324,8 @@ This visualization shows the average daily consumption patterns broken down by e
 
 ### Microsoft Power BI reports
 
-⚠️ Lisada Power BI link ⚠️
-[View the Microsoft Power BI repors here]()
-
+[[View the Microsoft Power BI repors here]()
+](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/temperature_and_consumption_report_powerBI.pbix)
 
 ## Statistical data analysis
 ### Regression Analysis (Daily Consumption vs. Temperature)
