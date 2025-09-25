@@ -308,7 +308,8 @@ This comparison highlights monthly consumption and temperatures across two conse
 - Both years show the same seasonal pattern: higher demand in winter, lower in summer.
 - Temperatures follow a similar curve, but January 2023 was colder than January 2024.
 - The comparison suggests that even small differences in temperature (e.g., colder January) can cause significant changes in electricity demand.
-<img width="1318" height="741" alt="image" src="https://github.com/user-attachments/assets/2b79b65a-62d8-434c-a092-94caa9d7e0e8" />
+[<img width="1318" height="741" alt="image" src="https://github.com/user-attachments/assets/2b79b65a-62d8-434c-a092-94caa9d7e0e8" />
+](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/average_temp_and_consumption_with_line_diag.png)
 
 ### 4. Average consumption daily profile
 Daily Consumption Profiles (by Day of the Week)
@@ -318,7 +319,8 @@ This visualization shows the average daily consumption patterns broken down by e
 - Saturdays display a flatter profile, with less pronounced peaks, indicating more evenly distributed consumption throughout the day.
 - Sundays show the lowest overall demand, especially during the morning hours, reflecting reduced industrial and commercial activity.
 - This analysis provides insights into behavioral and operational differences between weekdays and weekends, which is essential for forecasting hourly demand and adjusting models for different calendar profiles.
-<img width="1303" height="738" alt="image" src="https://github.com/user-attachments/assets/164354f1-1cc7-4e83-9c7b-fc5b3557757b" />
+[<img width="1303" height="738" alt="image" src="https://github.com/user-attachments/assets/2691862c-1653-45cd-be58-8977fec6c3bb" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/average_cons_daily_profile.png)
+
 
 ### Microsoft Power BI reports
 The charts and data shown above can be explored in more detail in the Power BI report.
@@ -331,9 +333,10 @@ All Days: A strong negative correlation was observed between temperature and con
 Workdays (Mon–Fri, non-holiday): The model shows an even stronger relationship (Slope ≈ –404 MWh/°C, R² ≈ 0.82), indicating that weekday consumption patterns are highly temperature-dependent.
 Weekends & Holidays: The slope is slightly lower (≈ –382 MWh/°C, R² ≈ 0.81), but the correlation remains strong, showing that leisure days also follow the same inverse trend.
 These models will later be integrated into the forecasting pipeline, where the segmented regressions (workdays vs. weekends/holidays) allow us to capture different behavioral patterns and improve accuracy in consumption prediction.
-<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/08ea2dcc-25ea-4fa6-8710-5c3832802e99" />
-<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/9f00be4e-60bc-4fc2-ad17-ee38230995ec" />
-<img width="728" height="506" alt="image" src="https://github.com/user-attachments/assets/6787e7f2-7a73-43c7-aa26-14b7ab7a67eb" />
+[<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/c60a6fd5-c5d5-4f64-905c-61a31e9617b9" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/all_days_regression.png)
+[<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/66d0100e-db34-4342-a348-10779907faac" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/workdays_regression_model.png)
+[<img width="728" height="506" alt="image" src="https://github.com/user-attachments/assets/cfa53e4e-7d8d-4207-8c72-00b81ccc40e0" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/weekend_and_holidays_reg.png)
+
 
 ### Bias calculation
 Seasonal Bias Correction Factors
@@ -342,7 +345,8 @@ Spring (March–May) and Autumn (September–November): Transitional periods, wh
 Winter (December–February): Highest bias adjustments, since cold extremes drive significantly higher electricity usage than predicted by a simple linear trend.
 Summer (June–August): Lowest adjustments, as electricity consumption stabilizes and is less variable with temperature.
 These factors are applied as multipliers to regression-based forecasts, either by season or by month, and can be segmented further into workdays vs. off-days.
-<img width="989" height="390" alt="bias" src="https://github.com/user-attachments/assets/0847b029-2811-4cfe-bb61-a21c8af894e6" />
+[<img width="989" height="390" alt="image" src="https://github.com/user-attachments/assets/32c84060-03b6-4c9c-a15f-98f573e791ee" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/bias_factors.png)
+
 
 ### Weekday Load Profiles (24×7 Hourly Share Matrix)
 
@@ -354,7 +358,8 @@ Daytime plateau (10–16h): Stable, elevated demand throughout business hours.
 Evening peak (18–21h): Second wave of demand, stronger on weekends, reflecting household activity.
 Weekday vs Weekend: Weekdays show stronger morning peaks due to industrial and office usage, while weekends flatten daytime demand and shift load toward later hours.
 This matrix is DST-aware and based on the Europe/Tallinn timezone, with public holidays excluded from the training sample. It is later used to adjust hourly forecast distributions once daily consumption is predicted.
-<img width="772" height="440" alt="weekday_profile" src="https://github.com/user-attachments/assets/b090625f-3d6c-4149-bc68-f11673a26697" />
+[<img width="772" height="440" alt="image" src="https://github.com/user-attachments/assets/2f84d396-f03e-4d0f-902d-48e3e607d325" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/weekday_load_profile.png)
+
 
 ### Jupyter Notebook
 
