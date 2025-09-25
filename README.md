@@ -356,7 +356,8 @@ This matrix is DST-aware and based on the Europe/Tallinn timezone, with public h
 
 ### Jupyter Notebook
 
-[View the Jupyter Notebook here](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/scripts/ecf_runner.ipynb)
+The statistical data analysis presented above can be explored in more detail in the Jupyter Notebook.
+[View the Jupyter Notebook here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/scripts/ecf_runner.ipynb)
 
 ## Model Accuracy Evaluation 
 
