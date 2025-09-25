@@ -370,7 +370,7 @@ Using weekday profiles, the daily consumption forecast can then be distributed a
 
 ### Jupyter Notebook
 
-The statistical data analysis presented above can be explored in more detail in the Jupyter Notebook.
+The statistical data analysis and consumption forecast presented above can be explored in more detail in the Jupyter Notebook.
 [View the Jupyter Notebook here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/scripts/ecf_runner.ipynb)
 
 ## Model Accuracy Evaluation 
