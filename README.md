@@ -73,7 +73,6 @@ The pipeline first generates a **daily forecast**, which is then disaggregated i
 
 <img width="874" height="309" alt="image" src="https://github.com/user-attachments/assets/eae64e03-778a-42ff-8bba-4ea0cdafdc62" />
 
-
 ## Data tables description
 
 ### Hourly & Daily Electricity Consumption DataFrames
@@ -282,7 +281,7 @@ We are performing a quality check on 3 external data sources:
 [![Meteostat 7-day forecast checkl](docs/meteostat%20_forecast_check.png)](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/meteostat%20_forecast_check.png)
 
 ## Power BI semantic model
-Power BI semantic model ⚠️
+
 <img width="877" height="609" alt="image" src="https://github.com/user-attachments/assets/f7fe6ded-1262-4dcd-b4cd-296d4a135d62" />
 
 
@@ -320,9 +319,8 @@ This visualization shows the average daily consumption patterns broken down by e
 <img width="1303" height="738" alt="image" src="https://github.com/user-attachments/assets/164354f1-1cc7-4e83-9c7b-fc5b3557757b" />
 
 ### Microsoft Power BI reports
-
-[[View the Microsoft Power BI repors here]()
-](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/temperature_and_consumption_report_powerBI.pbix)
+The charts and data shown above can be explored in more detail in the Power BI report.
+[[View the Microsoft Power BI repors here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/temperature_and_consumption_report_powerBI.pbix)
 
 ## Statistical data analysis
 ### Regression Analysis (Daily Consumption vs. Temperature)
