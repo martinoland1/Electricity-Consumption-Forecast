@@ -1,0 +1,7 @@
+check;value;threshold;status_or_note
+file_latest;forecast_consumption_hourly_next7_tallinn_20250919_20250925.csv;INFO;
+hourly_step_share;1.0;1.0=OK;1.0 tähendab kõigil vahedel 1h
+missing_hours_inside_range;0;0;0 tähendab ühtegi tundi ei puudu vahemiku seest
+na_share;0.0;≤1% (PASS) / ≤5% (WARN);PASS
+negative_share;0.0;0%;PASS
+outlier_share_vs_allfiles;0.0;≤1% (PASS) / ≤3% (WARN);PASS  [robust range 191…1475]

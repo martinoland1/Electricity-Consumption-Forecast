@@ -1,0 +1,4 @@
+file_old;file_new;overlap_hours;drift_share_rel>1%;drift_share_rel>3%;max_rel_diff;max_rel_diff_at
+forecast_consumption_hourly_next7_tallinn_20250918_20250924.csv;forecast_consumption_hourly_next7_tallinn_20250919_20250925.csv;144;0.3819444444444444;0.013888888888888888;0.03751996058017165;2025-09-24 08:00:00+00:00
+forecast_consumption_hourly_next7_tallinn_20250919_20250925.csv;forecast_consumption_hourly_next7_tallinn_20250920_20250926.csv;144;0.3611111111111111;0.16666666666666666;0.03433685456981727;2025-09-22 13:00:00+00:00
+forecast_consumption_hourly_next7_tallinn_20250920_20250926.csv;forecast_consumption_hourly_next7_tallinn_20250923_20250929.csv;96;0.4791666666666667;0.0625;0.045188781466791075;2025-09-26 13:00:00+00:00
