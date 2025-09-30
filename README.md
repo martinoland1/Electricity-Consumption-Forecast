@@ -383,35 +383,43 @@ The scripts used in the Jupyter Notebook, along with their descriptions, can be 
 ## Project Summary and Conclusions
 
 **Objective**  
+
 The goal of this project was to build a model that forecasts hourly electricity consumption in Estonia.  
 The main focus of the analysis was the relationship between average daily temperature and electricity consumption.  
 
 **Data and Sources**  
+
 The analysis used two main datasets:  
 - **Electricity Consumption** – Hourly consumption data retrieved via the Elering API.  
 - **Temperature** – Hourly weather data from the Meteostat API.  
 
 **Methodology**  
+
 - Data timezone alignment and aggregation to daily level.  
 - Building a linear regression model to estimate the relationship between temperature and electricity consumption.  
 - Separating results into two groups: weekdays and weekends/holidays.  
 
 **Key Findings**  
+
 - **Weekdays (Mon–Fri, non-holidays):** Consumption is strongly temperature-dependent (Slope ≈ –404 MWh/°C, R² ≈ 0.82).  
 - **Weekends & Holidays:** The relationship remains strong but slightly weaker (Slope ≈ –382 MWh/°C, R² ≈ 0.81).  
 - In conclusion, electricity consumption decreases by about **380–400 MWh for each 1 °C** increase in temperature, with a stronger effect observed on weekdays.  
 
 **Visualizations**  
+
 - Regression charts illustrating the relationship between consumption and temperature.
-- **GRAAFIK**  
+[<img width="713" height="496" alt="image" src="https://github.com/user-attachments/assets/66d0100e-db34-4342-a348-10779907faac" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/workdays_regression_model.png)
+[<img width="728" height="506" alt="image" src="https://github.com/user-attachments/assets/cfa53e4e-7d8d-4207-8c72-00b81ccc40e0" />](https://github.com/martinoland1/Electricity-Consumption-Forecast/blob/main/docs/weekend_and_holidays_reg.png)
 - Forecast vs actual consumption comparison chart.
-- **GRAAFIK**      
+**GRAAFIK**      
 
 **Conclusions and Applications**  
+
 - The model and developed scripts can be used for temperature-based electricity consumption forecasting in Estonia.  
 - Results can support planning and monitoring activities.  
 - Uncertainty should be considered, especially when distributing forecasts at the hourly level.  
 
 **Next Steps**  
+
 - Explore more precise methods to distribute daily forecasts into hourly consumption profiles (e.g., weekday load patterns).  
 - Include additional explanatory factors (consumer behavior, impact of the new frequency regulation market) to improve accuracy.
