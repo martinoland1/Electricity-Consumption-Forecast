@@ -415,22 +415,6 @@ All metrics are computed only for overlapping hours where both forecast and actu
 
 ---
 
-### Visual outputs
-
-- **Daily metrics table (interactive view in notebook):**  
-  ![Daily Metrics](scripts/plots/daily_metrics.png)  
-
-- **APE% (Our vs Actual)** – heatmap + sparklines of hourly Absolute Percentage Error across days.  
-  ![APE% Heatmap](scripts/plots/ape_heatmap.png)  
-
-- **Line panel (Last 7 days + tomorrow)** – hourly plots showing:  
-  - Blue: our forecast,  
-  - Orange: actual (Elering),  
-  - Green: Elering plan (if available).  
-
-  ![Line Panel](scripts/plots/line_panel.png)  
-
----
 
 ### File locations
 
