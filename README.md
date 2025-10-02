@@ -378,7 +378,73 @@ The statistical data analysis and consumption forecast presented above can be ex
 The scripts used in the Jupyter Notebook, along with their descriptions, can be found in the Scripts folder.
 [View all scripts here.](https://github.com/martinoland1/Electricity-Consumption-Forecast/tree/main/scripts)
 
-## Model Accuracy Evaluation 
+## Model Accuracy Evaluation
+
+**Purpose.** Provide an overview of forecast accuracy compared to actual consumption and, when available, Elering’s plan. Evaluation is performed for recent days both on an hourly and daily level.
+
+**Evaluation window.** Last **7 days** (including the current day, if data is available). Tomorrow’s forecast is also displayed.
+
+**Comparison pairs.**
+- *Model vs Actual* — our model forecast vs Elering actual consumption.  
+- *Plan vs Actual* — Elering plan vs actual consumption (if plan available).  
+- *Model vs Plan* — our model forecast vs Elering plan (auxiliary view).  
+
+---
+
+### Output metrics (daily level)
+
+The **Daily metrics** table provides the following columns:  
+
+- **date** – calendar day.  
+- **sum_abs_err_MWh** — daily sum of absolute errors between our forecast and actual consumption (MWh).  
+- **day_avg_err_pct** — daily average relative error (%) = sum_abs_err_MWh / our_day_sum_MWh × 100.  
+- **elering_sum_abs_err_MWh** — daily sum of absolute errors between Elering plan and actual consumption (MWh).  
+- **our_day_sum_MWh** — our 24h forecasted consumption sum (MWh).  
+- **actual_day_sum_MWh** — actual 24h consumption (MWh).  
+- **avg_abs_err_MWh** — mean hourly absolute error (MWh) for overlapping hours.  
+- **max_abs_err_MWh** — largest hourly absolute error in the day (MWh).  
+- **min_abs_err_MWh** — smallest hourly absolute error in the day (MWh).  
+
+All metrics are computed only for overlapping hours where both forecast and actual values are available.  
+
+**Example (26.09.2025):**
+
+| date   | sum_abs_err_MWh | day_avg_err_pct | elering_sum_abs_err_MWh | our_day_sum_MWh | actual_day_sum_MWh | avg_abs_err_MWh | max_abs_err_MWh | min_abs_err_MWh |
+|--------|-----------------|-----------------|-------------------------|-----------------|--------------------|-----------------|-----------------|-----------------|
+| 26.09  | 1607.7          | 7.4%            | 997.6                   | 21822.9         | 20392.4            | 67.0            | 212.5           | 1.4             |
+
+---
+
+### Visual outputs
+
+- **Daily metrics table (interactive view in notebook):**  
+  ![Daily Metrics](scripts/plots/daily_metrics.png)  
+
+- **APE% (Our vs Actual)** – heatmap + sparklines of hourly Absolute Percentage Error across days.  
+  ![APE% Heatmap](scripts/plots/ape_heatmap.png)  
+
+- **Line panel (Last 7 days + tomorrow)** – hourly plots showing:  
+  - Blue: our forecast,  
+  - Orange: actual (Elering),  
+  - Green: Elering plan (if available).  
+
+  ![Line Panel](scripts/plots/line_panel.png)  
+
+---
+
+### File locations
+
+- **Results table (CSV):** `scripts/output/qc/forecast_vs_actual_comparison_hourly.csv`  
+- **Charts and panels:** `scripts/plots/`  
+
+---
+
+### How to interpret results
+
+- **sum_abs_err_MWh** reflects the total daily error magnitude — smaller is better.  
+- **day_avg_err_pct** normalizes the error to daily forecasted consumption, allowing comparison across days.  
+- **avg_abs_err_MWh** and **max_abs_err_MWh** highlight the typical and worst-case hourly errors.  
+- **elering_sum_abs_err_MWh** allows direct comparison: whether our model or Elering’s plan was more accurate.   
 
 ## Project Summary and Conclusions
 
@@ -404,7 +470,10 @@ The analysis used two main datasets:
 - **Weekdays (Mon–Fri, non-holidays):** Consumption is strongly temperature-dependent (Slope ≈ –404 MWh/°C, R² ≈ 0.82).  
 - **Weekends & Holidays:** The relationship remains strong but slightly weaker (Slope ≈ –382 MWh/°C, R² ≈ 0.81).  
 - In conclusion, electricity consumption decreases by about **380–400 MWh for each 1 °C** increase in temperature, with a stronger effect observed on weekdays.  
-
+- **Daily anomalies up to ~18%** on some days (e.g., **24, 27, 29 Sep** in the sample).
+- **Hourly APE spikes of 80–100%** (notably **27 & 29 Sep**). 
+- **Operational threshold (rule of thumb).**
+- Forecast is considered **reliable** when **most days have < 10% daily error (day_avg_err_pct)**.
 **Visualizations**  
 
 - Regression charts illustrating the relationship between consumption and temperature.
