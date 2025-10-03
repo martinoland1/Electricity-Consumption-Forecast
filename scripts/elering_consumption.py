@@ -1,6 +1,6 @@
 # elering_consumption.py
 # Reusable client for Elering consumption data in Europe/Tallinn.
-# API (UTC) -> parse -> convert to local -> hard-cut [start, end) -> optional impute -> enrich -> (optional) save
+# API (UTC) -> parse -> convert to local -> hard-cut [start, end) -> (optional) 15min->hour aggregation -> optional impute -> enrich -> (optional) save
 
 from __future__ import annotations
 import os
@@ -9,7 +9,7 @@ import math
 import requests
 import pandas as pd
 from datetime import datetime
-from typing import Optional, Tuple, Iterable
+from typing import Optional, Tuple, Iterable, Literal
 from dateutil.relativedelta import relativedelta
 
 ELERING_URL = "https://dashboard.elering.ee/api/system/with-plan"
@@ -123,7 +123,6 @@ def _add_holidays_localdate(df: pd.DataFrame, date_col: str) -> None:
         ee = holidays.country_holidays("EE", years=years)
         df["is_holiday"] = df[date_col].map(lambda d: d in ee)
     except Exception:
-        # Lib not installed → fallback
         df["is_holiday"] = False
 
 
@@ -149,6 +148,37 @@ def _safe_save_csv(df: pd.DataFrame, path: str) -> str:
             i += 1
             target = f"{base}_v{i}{ext}"
 
+
+def _aggregate_to_hour(
+    df_local: pd.DataFrame,
+    strategy: Literal["sum_to_hour", "top_of_hour_only"] = "sum_to_hour",
+    value_col: str = "sum_el_hourly_value",
+) -> pd.DataFrame:
+    """
+    Accepts ANY granulaarsus (15min või 60min) ja tagastab tunniseeriana.
+    - 'sum_to_hour': summeerib 15min -> 60min (NaN loetakse 0-ks)
+      * Kui andmed on juba tunnised, jääb väärtus samaks.
+    - 'top_of_hour_only': võtab ainult minute == 0 kirjed (ignoreerib veerandtunde).
+    """
+    if df_local.empty:
+        return df_local
+
+    s = (
+        df_local.drop_duplicates(subset=["sum_cons_time"])
+        .set_index("sum_cons_time")
+        .sort_index()[value_col]
+    )
+
+    if strategy == "top_of_hour_only":
+        hourly = s[s.index.minute == 0]
+        hourly = hourly.to_frame(name=value_col).reset_index()
+        return hourly
+
+    # default: sum_to_hour
+    hourly = s.fillna(0).resample("H").sum()  # timezone-aware resample
+    hourly = hourly.rename(value_col).to_frame().reset_index()
+    return hourly
+
 # ---------------------------
 # Public API
 # ---------------------------
@@ -162,9 +192,12 @@ def get_hourly_consumption(
     add_weekday: bool = True,
     add_holidays: bool = True,
     impute_missing: bool = True,
+    aggregate_strategy: Literal["sum_to_hour",
+                                "top_of_hour_only"] = "sum_to_hour",
 ) -> pd.DataFrame:
     """
     Return hourly consumption in local time for the last `months` months.
+    Alates 01.10.2025 toetab ka 15min sisendit – teisendame tunniks vastavalt `aggregate_strategy`.
     - end_exclusive_local: default = today 00:00 local (excludes today completely)
     - exclude_today: if True, end_exclusive_local is forced to today 00:00
     Columns: sum_cons_time(tz-aware), sum_el_hourly_value, [imputed], [weekday,is_weekend,is_holiday]
@@ -182,37 +215,48 @@ def get_hourly_consumption(
         b_utc = b_local.tz_convert("UTC").to_pydatetime()
         parts.append(_fetch_chunk(a_utc, b_utc))
 
-    df = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(
-        columns=["sum_cons_time", "sum_el_hourly_value"])
-    if df.empty:
-        # Ensure expected schema
-        df["sum_cons_time"] = pd.Series(dtype="datetime64[ns, UTC]")
-        df["sum_el_hourly_value"] = pd.Series(dtype="float")
-        return df
+    raw = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(
+        columns=["sum_cons_time", "sum_el_hourly_value"]
+    )
+    if raw.empty:
+        raw["sum_cons_time"] = pd.Series(dtype="datetime64[ns, UTC]")
+        raw["sum_el_hourly_value"] = pd.Series(dtype="float")
+        return raw
 
     # Deduplicate, sort, convert to local time
-    df = (df.drop_duplicates(subset=["sum_cons_time"])
-            .sort_values("sum_cons_time")
-            .reset_index(drop=True))
-    df["sum_cons_time"] = df["sum_cons_time"].dt.tz_convert(tz)
+    raw = (
+        raw.drop_duplicates(subset=["sum_cons_time"])
+           .sort_values("sum_cons_time")
+           .reset_index(drop=True)
+    )
+    raw["sum_cons_time"] = raw["sum_cons_time"].dt.tz_convert(tz)
 
     # Strict local cut [start, end)
-    df = _hard_cut_local(df, start_inclusive_local, end_exclusive_local)
+    raw = _hard_cut_local(raw, start_inclusive_local, end_exclusive_local)
 
-    # Optional imputation
+    # NEW: normalize to hourly (supports 15min input)
+    df = _aggregate_to_hour(raw, strategy=aggregate_strategy,
+                            value_col="sum_el_hourly_value")
+
+    # Optional imputation (applies to hourly series post-aggregation)
     if impute_missing:
         df = _impute_neighbors_mean(df)
 
     # Optional enrichments
     if add_weekday:
         _add_weekday_weekend(df)
+    else:
+        df["weekday"] = pd.Series(dtype="object")
+        df["is_weekend"] = pd.Series(dtype="boolean")
+
     if add_holidays:
-        # holidays by local DATE
         local_dates = df["sum_cons_time"].dt.date if not df.empty else pd.Series(
             [], dtype="object")
         tmp = pd.DataFrame({"_date": local_dates})
         _add_holidays_localdate(tmp, "_date")
         df["is_holiday"] = tmp["is_holiday"].values
+    else:
+        df["is_holiday"] = pd.Series(dtype="boolean")
 
     return df
 
@@ -225,6 +269,8 @@ def get_daily_consumption(
     add_weekday: bool = True,
     add_holidays: bool = True,
     impute_missing_hourly: bool = True,
+    aggregate_strategy: Literal["sum_to_hour",
+                                "top_of_hour_only"] = "sum_to_hour",
 ) -> pd.DataFrame:
     """
     Aggregate hourly -> daily in local time (calendar days).
@@ -235,9 +281,10 @@ def get_daily_consumption(
         end_exclusive_local=end_exclusive_local,
         tz=tz,
         exclude_today=exclude_today,
-        add_weekday=False,          # compute daily labels fresh
+        add_weekday=False,
         add_holidays=False,
         impute_missing=impute_missing_hourly,
+        aggregate_strategy=aggregate_strategy,
     )
 
     if hourly.empty:
@@ -251,9 +298,9 @@ def get_daily_consumption(
         .rename("sum_el_daily_value")
         .reset_index()
     )
-    # Drop any bucket >= end_exclusive_local (shouldn’t exist, but be safe)
-    now_local = pd.Timestamp.now(tz=tz).normalize() if exclude_today else None
+
     if exclude_today:
+        now_local = pd.Timestamp.now(tz=tz).normalize()
         daily = daily[daily["sum_cons_time"] <
                       now_local].reset_index(drop=True)
 
@@ -299,9 +346,13 @@ if __name__ == "__main__":
                         help="Export daily instead of hourly.")
     parser.add_argument("--outdir", type=str, default="output",
                         help="Output folder (default: output).")
+    parser.add_argument("--hour-mode", type=str, default="sum", choices=["sum", "top"],
+                        help="How to build hours when API returns 15min: 'sum' (sum_to_hour, NaN=0) or 'top' (top_of_hour_only).")
     args = parser.parse_args()
 
     exclude_today = not args.include_today
+    agg = "sum_to_hour" if args.hour_mode == "sum" else "top_of_hour_only"
+
     if args.daily:
         df = get_daily_consumption(
             months=args.months,
@@ -310,8 +361,8 @@ if __name__ == "__main__":
             add_weekday=not args.no_weekday,
             add_holidays=not args.no_holidays,
             impute_missing_hourly=not args.no_impute,
+            aggregate_strategy=agg,
         )
-        # Filename
         now_local = pd.Timestamp.now(tz=args.tz)
         end_local = now_local.normalize() if exclude_today else now_local
         start_local = end_local - relativedelta(months=args.months)
@@ -324,6 +375,7 @@ if __name__ == "__main__":
             add_weekday=not args.no_weekday,
             add_holidays=not args.no_holidays,
             impute_missing=not args.no_impute,
+            aggregate_strategy=agg,
         )
         now_local = pd.Timestamp.now(tz=args.tz)
         end_local = now_local.normalize() if exclude_today else now_local
